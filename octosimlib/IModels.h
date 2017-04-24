@@ -1,5 +1,7 @@
 #pragma once
 
+class SimulationLoop;
+
 class ISimMessage
 {
 public:
@@ -10,49 +12,99 @@ public:
 class ISimObject
 {
 public:
-    ISimObject();
+    ISimObject(SimulationLoop * loop);
     virtual ~ISimObject();
 
     virtual void Input(ISimMessage * message) = 0;
-    virtual void TimerExpired(unsigned long long simulationTime) = 0;
+    /* The default timer action is to do nothing. */
+    virtual void TimerExpired(unsigned long long simulationTime) {}
+
+    SimulationLoop * GetLoop() { return loop; }
+private:
+    SimulationLoop * loop;
 };
 
 class ITransport;
+class IPath;
 
 class IApplication : public ISimObject
 {
 public:
-    IApplication();
+    IApplication(SimulationLoop * loop);
     virtual ~IApplication();
 
-    virtual void SetTransport(ITransport * transport) = 0;
+    virtual void SetTransport(ITransport * transport)
+    {
+        this->transport = transport;
+    }
 
-    virtual void Input(ISimMessage * message) = 0;
-    virtual void TimerExpired(unsigned long long simulationTime) = 0;
+    virtual ITransport * GetTransport()
+    {
+        return transport;
+    }
+
+private:
+    ITransport * transport;
 };
 
-class ITransport
+class ITransport : public ISimObject
 {
 public:
-    ITransport();
+    ITransport(SimulationLoop * loop);
     virtual ~ITransport();
 
-    virtual void SetApplication(IApplication * application) = 0;
-    virtual void SetPath(IApplication * application) = 0;
+    virtual void SetApplication(IApplication * application) 
+    {
+        this->application = application;
+    }
+
+    virtual IApplication * GetApplication()
+    {
+        return application;
+    }
+
+    virtual void SetPath(IPath * path)
+    {
+        this->path = path;
+    }
+
+    virtual IPath * GetPath()
+    {
+        return path;
+    }
 
     virtual void ApplicationInput(ISimMessage * message) = 0; /* input from the application, immediate */
     virtual void Input(ISimMessage * message) = 0; /* input from the network */
+    /*
     virtual void TimerExpired(unsigned long long simulationTime) = 0;
+    */
+
+private:
+    IApplication * application;
+    IPath * path;
 };
 
-class IPath
+class IPath : public ISimObject
 {
 public:
-    IPath();
+    IPath(SimulationLoop * loop);
     virtual ~IPath();
 
-    virtual void SetTransport(ITransport * transport) = 0; /* where to deliver messages? */
+    virtual void SetTransport(ITransport * transport)
+    {
+        this->transport = transport;
+    }
+
+    virtual ITransport * GetTransport()
+    {
+        return transport;
+    }
 
     virtual void Input(ISimMessage * message) = 0; 
+    /*
     virtual void TimerExpired(unsigned long long simulationTime) = 0;
+    */
+
+private: 
+    ITransport * transport;
 };

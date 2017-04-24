@@ -67,7 +67,7 @@ MessageTreeNode * MessageTree::Remove(const MessageTreeNode * key)
     MessageTreeNode *to_delete;
     MessageTreeNode *child;
 
-    if ((to_delete = Search(key)) == NULL) 
+    if ((to_delete = Search(key)) == NULL)
         return NULL;
 
     count--;
@@ -115,7 +115,7 @@ MessageTreeNode * MessageTree::Remove(const MessageTreeNode * key)
         /* now delete to_delete (which is at the location where the smright previously was) */
     }
 
-    if (to_delete->left != NULL) 
+    if (to_delete->left != NULL)
         child = to_delete->left;
     else child = to_delete->right;
 
@@ -132,7 +132,10 @@ MessageTreeNode * MessageTree::Remove(const MessageTreeNode * key)
         /* change child to BLACK, removing a RED node is no problem */
         child->color = MessageNodeBlack;
     }
-    else DeleteFixup(child, to_delete->parent);
+    else if (child != NULL || to_delete->parent != NULL)
+    {
+        DeleteFixup(child, to_delete->parent);
+    }
 
     /* unlink completely */
     to_delete->parent = NULL;
@@ -226,7 +229,6 @@ void MessageTree::InsertFixup(MessageTreeNode * node)
 void MessageTree::InsertFixup(MessageTreeNode * node)
 {
     MessageTreeNode	*uncle;
-    MessageTreeNode	*grandparent;
 
     /* While not at the root and need fixing... */
     while (node != root && node->parent->color == MessageNodeRed) {
@@ -372,15 +374,17 @@ void MessageTree::ChangeParentPtr(MessageTreeNode * parent,
         if (root == oldParent) 
             root = newParent;
     }
-
-    if (parent->left == oldParent)
+    else
     {
-        parent->left = newParent;
-    }
+        if (parent->left == oldParent)
+        {
+            parent->left = newParent;
+        }
 
-    if (parent->right == oldParent)
-    {
-        parent->right = newParent;
+        if (parent->right == oldParent)
+        {
+            parent->right = newParent;
+        }
     }
 }
 
@@ -586,7 +590,7 @@ MessageTreeNode * MessageTree::First()
 {
     MessageTreeNode *node;
 
-    for (node = root; node->left != NULL; node = node->left);
+    for (node = root; node != NULL && node->left != NULL; node = node->left);
 
     return node;
 }
@@ -595,7 +599,7 @@ MessageTreeNode * MessageTree::Last()
 {
     MessageTreeNode *node;
 
-    for (node = root; node->right != NULL; node = node->right);
+    for (node = root; node != NULL && node->right != NULL; node = node->right);
 
     return node;
 }
@@ -648,6 +652,11 @@ MessageTreeNode::MessageTreeNode(
 MessageTreeNode::~MessageTreeNode()
 {
     Release();
+
+    if (message != NULL)
+    {
+        delete message;
+    }
 }
 
 MessageTreeNode * MessageTreeNode::Grandparent()

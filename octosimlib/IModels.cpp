@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "IModels.h"
 
 ISimMessage::ISimMessage()
@@ -8,15 +9,19 @@ ISimMessage::~ISimMessage()
 {
 }
 
+ISimObject::ISimObject(SimulationLoop * loop)
+{
+    this->loop = loop;
+}
+
 ISimObject::~ISimObject()
 {
 }
 
-ISimObject::ISimObject()
-{
-}
-
-IApplication::IApplication()
+IApplication::IApplication(SimulationLoop * loop)
+    :
+    transport(NULL),
+    ISimObject(loop)
 {
 }
 
@@ -24,7 +29,11 @@ IApplication::~IApplication()
 {
 }
 
-ITransport::ITransport()
+ITransport::ITransport(SimulationLoop * loop)
+    :
+    application(NULL),
+    path(NULL),
+    ISimObject(loop)
 {
 }
 
@@ -32,7 +41,10 @@ ITransport::~ITransport()
 {
 }
 
-IPath::IPath()
+IPath::IPath(SimulationLoop * loop)
+    :
+    transport(NULL),
+    ISimObject(loop)
 {
 }
 

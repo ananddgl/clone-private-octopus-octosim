@@ -131,14 +131,20 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DnsUdpTransport.h" />
     <ClInclude Include="IModels.h" />
+    <ClInclude Include="LossyLink.h" />
     <ClInclude Include="MessageTree.h" />
     <ClInclude Include="SimulationLoop.h" />
+    <ClInclude Include="SimulationRandom.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DnsUdpTransport.cpp" />
     <ClCompile Include="IModels.cpp" />
+    <ClCompile Include="LossyLink.cpp" />
     <ClCompile Include="MessageTree.cpp" />
     <ClCompile Include="SimulationLoop.cpp" />
+    <ClCompile Include="SimulationRandom.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

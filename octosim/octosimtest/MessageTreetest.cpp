@@ -1,18 +1,8 @@
 #include <stdlib.h>
 #include <algorithm>    // std::max
 #include "../octosimlib/MessageTree.h"
-
+#include "TestModels.h"
 #include "MessageTreetest.h"
-
-class TestMessage : public ISimMessage
-{
-public:
-    TestMessage(int n) { message_number = n; }
-    ~TestMessage() {}
-
-    int message_number;
-};
-
 
 MessageTreetest::MessageTreetest()
     :
@@ -63,6 +53,29 @@ bool MessageTreetest::MessageTreeDoTest()
         tree = new MessageTree();
     }
 
+    /* First, test a single message add and delete */
+    ret = InsertNodeTest(1, false);
+
+    if (ret)
+    {
+        ret = DeleteNodeTest(1, true);
+    }
+
+    /* Then, test Get First and Get Last on an empty tree */
+    if (ret)
+    {
+        MessageTreeNode * mtn = tree->First();
+
+        ret = (mtn == NULL);
+
+        if (ret)
+        {
+            mtn = tree->Last();
+            ret = (mtn == NULL);
+        }
+    }
+
+    /* Now, proceed with the full construction test */
     for (int i = node_first; ret && i < node_last; i += 2)
     {
         ret = InsertNodeTest(i, false);
@@ -128,7 +141,7 @@ bool MessageTreetest::MessageTreeDoTest()
         }
         else
         {
-            ret = DeleteNodeTest(mtn->scheduled_time, true);
+            ret = DeleteNodeTest((int) mtn->scheduled_time, true);
         }
     }
 

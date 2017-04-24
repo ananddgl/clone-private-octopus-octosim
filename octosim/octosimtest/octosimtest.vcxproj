@@ -136,9 +136,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MessageTreetest.h" />
+    <ClInclude Include="SimLoopTest.h" />
+    <ClInclude Include="SimRandomTest.h" />
+    <ClInclude Include="TestModels.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageTreetest.cpp" />
+    <ClCompile Include="SimLoopTest.cpp" />
+    <ClCompile Include="SimRandomTest.cpp" />
+    <ClCompile Include="TestModels.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
