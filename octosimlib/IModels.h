@@ -1,5 +1,4 @@
 #pragma once
-
 class SimulationLoop;
 
 class ISimMessage
@@ -7,6 +6,12 @@ class ISimMessage
 public:
     ISimMessage();
     virtual ~ISimMessage();
+
+    virtual void Reference();
+    virtual bool Dereference();
+
+private:
+    int referenceCount;
 };
 
 class ISimObject
@@ -75,9 +80,6 @@ public:
 
     virtual void ApplicationInput(ISimMessage * message) = 0; /* input from the application, immediate */
     virtual void Input(ISimMessage * message) = 0; /* input from the network */
-    /*
-    virtual void TimerExpired(unsigned long long simulationTime) = 0;
-    */
 
 private:
     IApplication * application;
@@ -107,4 +109,13 @@ public:
 
 private: 
     ITransport * transport;
+};
+
+class IDelayDistribution : ISimObject
+{
+public:
+    IDelayDistribution(SimulationLoop * loop);
+    virtual ~IDelayDistribution();
+
+    virtual unsigned long long NextDelay() = 0;
 };

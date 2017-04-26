@@ -2,6 +2,8 @@
 #include "IModels.h"
 
 ISimMessage::ISimMessage()
+    :
+    referenceCount(1)
 {
 }
 
@@ -9,9 +11,31 @@ ISimMessage::~ISimMessage()
 {
 }
 
-ISimObject::ISimObject(SimulationLoop * loop)
+void ISimMessage::Reference()
 {
-    this->loop = loop;
+    referenceCount++;
+}
+
+bool ISimMessage::Dereference()
+{
+    bool ret = referenceCount <= 1;
+
+    if (ret)
+    {
+        referenceCount = 0;
+    }
+    else
+    {
+        referenceCount--;
+    }
+
+    return ret;
+}
+
+ISimObject::ISimObject(SimulationLoop * loop)
+    :
+    loop(loop)
+{
 }
 
 ISimObject::~ISimObject()
@@ -51,3 +75,14 @@ IPath::IPath(SimulationLoop * loop)
 IPath::~IPath()
 {
 }
+
+IDelayDistribution::IDelayDistribution(SimulationLoop * loop)
+    :
+    ISimObject(loop)
+{
+}
+
+IDelayDistribution::~IDelayDistribution()
+{
+}
+

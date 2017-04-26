@@ -87,3 +87,8 @@ void TestLink::Input(ISimMessage * message)
     GetLoop()->SubmitMessage(delay, GetTransport(), message);
 }
 
+TestMessage::TestMessage(int n)
+    :
+    message_number(n),
+    ISimMessage()
+{ }

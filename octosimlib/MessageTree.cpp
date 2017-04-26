@@ -653,9 +653,9 @@ MessageTreeNode::~MessageTreeNode()
 {
     Release();
 
-    if (message != NULL)
+    if (message != NULL && message->Dereference())
     {
-        delete message;
+            delete message;
     }
 }
 
@@ -738,8 +738,10 @@ void MessageTreeNode::Release()
 
     target = NULL;
 
-    delete message;
-
+    if (message != NULL && message->Dereference())
+    {
+        delete message;
+    }
     message = NULL;
 }
 

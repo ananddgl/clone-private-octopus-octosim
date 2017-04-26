@@ -1,5 +1,4 @@
 #pragma once
-#include "IModels.h"
 /*
  * Simulation loop. The "Do loop" message examines the next messages 
  * in the queues
@@ -7,6 +6,8 @@
 
 class MessageTree;
 class SimulationRandom;
+class ISimObject;
+class ISimMessage;
 
 class SimulationLoop
 {

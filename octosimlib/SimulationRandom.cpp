@@ -245,6 +245,11 @@ unsigned long SimulationRandom::GetRandom()
     return (unsigned long)(blowfish_encipher(xorshift128plus()) & 0xFFFFFFFF);
 }
 
+unsigned long long SimulationRandom::GetRandom64()
+{
+    return blowfish_encipher(xorshift128plus());
+}
+
 unsigned long SimulationRandom::GetRandomUniform(unsigned long upper_bound)
 {
     unsigned long long r, min;

@@ -23,6 +23,8 @@ public:
 
     unsigned long GetRandom();
 
+    unsigned long long GetRandom64();
+
     unsigned long GetRandomUniform(unsigned long range_max);
 
     double GetZeroToOne();

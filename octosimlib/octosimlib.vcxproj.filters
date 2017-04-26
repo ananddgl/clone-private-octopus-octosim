@@ -36,6 +36,24 @@
     <ClInclude Include="DnsUdpTransport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DnsMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DnsStub.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicHashTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WriteOnceHash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DnsRecursive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DnsAuthoritative.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IModels.cpp">
@@ -54,6 +72,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DnsUdpTransport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DnsMessage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DnsStub.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WriteOnceHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DnsRecursive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DnsAuthoritative.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

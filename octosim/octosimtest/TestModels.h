@@ -5,7 +5,7 @@
 class TestMessage : public ISimMessage
 {
 public:
-    TestMessage(int n) { message_number = n; }
+    TestMessage(int n);
     ~TestMessage() {}
 
     int message_number;
