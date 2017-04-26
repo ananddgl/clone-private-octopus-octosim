@@ -92,3 +92,27 @@ TestMessage::TestMessage(int n)
     message_number(n),
     ISimMessage()
 { }
+
+TestSimpleDelay::TestSimpleDelay(int delay, SimulationLoop * loop)
+    :
+    delay(delay),
+    IDelayDistribution(loop)
+{
+}
+
+TestSimpleDelay::~TestSimpleDelay()
+{
+}
+
+void TestSimpleDelay::Input(ISimMessage * message)
+{
+    if (message->Dereference())
+    {
+        delete message;
+    }
+}
+
+unsigned long long TestSimpleDelay::NextDelay()
+{
+    return delay;
+}

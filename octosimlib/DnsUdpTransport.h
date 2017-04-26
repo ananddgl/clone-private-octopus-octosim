@@ -17,6 +17,7 @@ public:
     unsigned long long nextTimer;
     unsigned long long rtt;
     unsigned long long rtt_dev;
+    int nb_timers_outstanding;
 private:
     void ResetTimer(unsigned long long delay);
 };

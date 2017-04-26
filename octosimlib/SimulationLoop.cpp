@@ -38,7 +38,7 @@ bool SimulationLoop::Init()
 
     if (ret && rnd == NULL)
     {
-        ret = new SimulationRandom();
+        rnd = new SimulationRandom();
     }
 
     return ret;

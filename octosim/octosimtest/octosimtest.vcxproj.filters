@@ -30,6 +30,9 @@
     <ClInclude Include="TestModels.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DnsUdpSimTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageTreetest.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestModels.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DnsUdpSimTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

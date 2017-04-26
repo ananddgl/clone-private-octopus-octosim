@@ -16,6 +16,10 @@
 DnsUdpTransport::DnsUdpTransport(SimulationLoop* loop)
     :
     retransmitQueue(NULL),
+    nextTimer(1000000000ull),
+    rtt(1000000ull),
+    rtt_dev(0ull),
+    nb_timers_outstanding(0),
     ITransport(loop)
 {
 }
@@ -89,6 +93,7 @@ void DnsUdpTransport::Input(ISimMessage * message)
                     {
                         delete next;
                     }
+                    break;
                 }
                 else
                 {
@@ -111,12 +116,19 @@ void DnsUdpTransport::Input(ISimMessage * message)
 
 void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
 {
-    if (simulationTime >= nextTimer)
+    if (nb_timers_outstanding > 0)
+        nb_timers_outstanding--;
+    else
+        nb_timers_outstanding = 0;
+
+    if (simulationTime >= nextTimer || nb_timers_outstanding <= 0)
     {
         /* Find all the pending messages larger than simulation time */
         DnsMessage * dm = retransmitQueue;
         DnsMessage ** previous = &retransmitQueue;
         unsigned long long min_timer = 10000000;
+
+        nextTimer = simulationTime;
 
         while (dm != NULL)
         {
@@ -139,6 +151,10 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
                     /* too many repeats, give up */
                     deleted = dm;
                 }
+            }
+            else
+            {
+                min_timer = std::min(min_timer, dm->transmit_time + dm->current_udp_timer - simulationTime);
             }
 
             if (!deleted)
@@ -164,16 +180,18 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
             }
         }
 
-        ResetTimer(min_timer);
+        if (retransmitQueue != NULL)
+            ResetTimer(min_timer);
     }
 }
 
 void DnsUdpTransport::ResetTimer(unsigned long long delay)
 {
     /* Note that we do not bother deleting the old timers. */
-    if ((GetLoop()->SimulationTime() + delay) < nextTimer)
+    if ( nb_timers_outstanding == 0 || (GetLoop()->SimulationTime() + delay) < nextTimer)
     {
         nextTimer = GetLoop()->SimulationTime() + delay;
+        nb_timers_outstanding++;
         GetLoop()->RequestTimer(delay, this);
     }
 }

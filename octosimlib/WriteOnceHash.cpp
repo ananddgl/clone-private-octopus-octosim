@@ -40,7 +40,7 @@ bool WriteOnceHash::Resize(unsigned newSize)
     {
         unsigned long long * newTable = new unsigned long long[newSize];
 
-        if (newTable == NULL)
+        if (newTable != NULL)
         {
             hashTable = newTable;
             tableSize = newSize;

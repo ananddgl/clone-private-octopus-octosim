@@ -34,19 +34,26 @@ void DnsStub::Input(ISimMessage * message)
 {
     DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
     /* If this is a response, write a summary line */
-    if (FStats != NULL && dm != NULL && dm->messageCode != DnsMessageCode::query)
+    if (dm != NULL && dm->messageCode != DnsMessageCode::query)
     {
-        unsigned long long arrival = GetLoop()->SimulationTime();
-        fprintf(FStats,
-            """%llu"",""%llu"",""%d"",""%s"",""%llu"",""%llu"",""%d""\n",
-            arrival,
-            dm->creation_time,
-            arrival - dm->creation_time,
-            dm->CodeToText(),
-            dm->query_id,
-            dm->qtarget_id,
-            dm->udp_repeat_counter
-        );
+        if (dm->messageCode == DnsMessageCode::response)
+        {
+            nb_transactions_complete++;
+        }
+        if (FStats != NULL)
+        {
+            unsigned long long arrival = GetLoop()->SimulationTime();
+            fprintf(FStats,
+                """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%d""\n",
+                arrival,
+                dm->creation_time,
+                arrival - dm->creation_time,
+                dm->CodeToText(),
+                dm->query_id,
+                dm->qtarget_id,
+                dm->udp_repeat_counter
+            );
+        }
     }
     if (message->Dereference())
     {

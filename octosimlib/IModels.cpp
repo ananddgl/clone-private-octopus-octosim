@@ -76,6 +76,8 @@ IPath::~IPath()
 {
 }
 
+void IPath::TimerExpired(unsigned long long simulationTime) {}
+
 IDelayDistribution::IDelayDistribution(SimulationLoop * loop)
     :
     ISimObject(loop)

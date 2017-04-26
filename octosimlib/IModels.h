@@ -103,9 +103,8 @@ public:
     }
 
     virtual void Input(ISimMessage * message) = 0; 
-    /*
-    virtual void TimerExpired(unsigned long long simulationTime) = 0;
-    */
+    
+    virtual void TimerExpired(unsigned long long simulationTime);
 
 private: 
     ITransport * transport;

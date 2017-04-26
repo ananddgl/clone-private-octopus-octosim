@@ -135,12 +135,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DnsUdpSimTest.h" />
     <ClInclude Include="MessageTreetest.h" />
     <ClInclude Include="SimLoopTest.h" />
     <ClInclude Include="SimRandomTest.h" />
     <ClInclude Include="TestModels.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DnsUdpSimTest.cpp" />
     <ClCompile Include="MessageTreetest.cpp" />
     <ClCompile Include="SimLoopTest.cpp" />
     <ClCompile Include="SimRandomTest.cpp" />

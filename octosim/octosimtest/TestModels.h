@@ -64,3 +64,18 @@ public:
     virtual void Input(ISimMessage * message) override;
 
 };
+
+class TestSimpleDelay : public IDelayDistribution
+{
+public:
+    int delay;
+
+    TestSimpleDelay(int delay, SimulationLoop * loop);
+    ~TestSimpleDelay();
+
+    // Inherited via IDelayDistribution
+    virtual void Input(ISimMessage * message) override;
+
+    virtual unsigned long long NextDelay() override;
+
+};

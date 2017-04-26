@@ -30,7 +30,7 @@ DnsMessage * DnsMessage::CreateResponse()
 
     if (response != NULL)
     {
-        messageCode = DnsMessageCode::response;
+        response->messageCode = DnsMessageCode::response;
     }
 
     return response;

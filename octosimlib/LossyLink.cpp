@@ -4,10 +4,10 @@
 
 
 
-LossyLink::LossyLink(SimulationLoop * loop)
+LossyLink::LossyLink(SimulationLoop * loop, double lossRate, unsigned long long delay)
     :
-    lossRate(0),
-    delay(2000),
+    lossRate(lossRate),
+    delay(delay),
     messages_sent(0),
     messages_dropped(0),
     IPath(loop)
@@ -25,7 +25,10 @@ void LossyLink::Input(ISimMessage * message)
     if (d < lossRate)
     {
         messages_dropped++;
-        delete message;
+        if (message->Dereference())
+        {
+            delete message;
+        }
     }
     else
     {
