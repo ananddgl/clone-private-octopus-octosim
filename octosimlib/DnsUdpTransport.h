@@ -18,6 +18,8 @@ public:
     unsigned long long rtt;
     unsigned long long rtt_dev;
     int nb_timers_outstanding;
+    int nb_timers_stop;
+    int nb_packets_deleted;
 private:
     void ResetTimer(unsigned long long delay);
 };

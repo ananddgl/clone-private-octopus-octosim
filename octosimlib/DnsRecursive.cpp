@@ -53,8 +53,9 @@ void DnsRecursive::AuthoritativeInput(ISimMessage * message)
 {
     DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
     /* Add the results to the cache. */
-    if (dm != NULL && simulatedCache.Insert(dm->qtarget_id))
+    if (dm != NULL) 
     {
+        (void)simulatedCache.Insert(dm->qtarget_id);
         /* These are new results, send the response. */
         GetTransport()->ApplicationInput(dm);
     }

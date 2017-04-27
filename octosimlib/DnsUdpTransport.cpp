@@ -20,6 +20,8 @@ DnsUdpTransport::DnsUdpTransport(SimulationLoop* loop)
     rtt(1000000ull),
     rtt_dev(0ull),
     nb_timers_outstanding(0),
+    nb_timers_stop(0),
+    nb_packets_deleted(0),
     ITransport(loop)
 {
 }
@@ -166,6 +168,7 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
 
             if (deleted)
             {
+                nb_packets_deleted++;
                 deleted->next_in_queue = NULL;
                 *previous = dm;
                 if (deleted->Dereference())
@@ -193,6 +196,10 @@ void DnsUdpTransport::ResetTimer(unsigned long long delay)
         nextTimer = GetLoop()->SimulationTime() + delay;
         nb_timers_outstanding++;
         GetLoop()->RequestTimer(delay, this);
+    }
+    else
+    {
+        nb_timers_stop++;
     }
 }
 
