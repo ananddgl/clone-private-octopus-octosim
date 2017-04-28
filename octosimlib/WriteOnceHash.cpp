@@ -46,12 +46,13 @@ bool WriteOnceHash::Resize(unsigned newSize)
             tableSize = newSize;
             memset(hashTable, 0, sizeof(unsigned long long)*tableSize);
             ret = true;
+            tableCount = 0;
 
             if (oldTable != NULL)
             {
                 for (unsigned int i = 0; ret && i < oldSize; i++)
                 {
-                    if (oldTable != 0)
+                    if (oldTable[i] != 0)
                     {
                         ret = DoInsert(oldTable[i]);
                     }
@@ -86,10 +87,16 @@ bool WriteOnceHash::Insert(unsigned long long key)
     }
     else if (tableSize < 2 * newCount)
     {
-        unsigned int newSize = 128;
-        if (tableSize > 0)
+        unsigned int newSize = tableSize;
+
+        if (tableSize == 0)
         {
-            newSize = 4 * tableSize;
+            newSize = 128;
+        }
+
+        while (newSize < 4* newCount)
+        {
+            newSize *= 2;
         }
 
         ret = Resize(newSize);
@@ -113,8 +120,14 @@ bool WriteOnceHash::DoInsert(unsigned long long key)
         if (hashTable[hash_index] == 0)
         {
             hashTable[hash_index] = key;
+            tableCount++;
             ret = true;
             break;
+        }
+        else if (hashTable[hash_index] == key)
+        {
+            /* found it. Do not insert it twice! */
+            ret = false;
         }
         else
         {
@@ -146,7 +159,7 @@ bool WriteOnceHash::Retrieve(unsigned long long key)
                 /* found a hole, which means the key is not there */
                 break;
             }
-            else if (hashTable[hash_index] == 0)
+            else if (hashTable[hash_index] == key)
             {
                 /* found it! */
                 ret = true;

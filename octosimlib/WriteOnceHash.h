@@ -14,6 +14,14 @@ public:
     bool Insert(unsigned long long key);
     bool Retrieve(unsigned long long key);
 
+    unsigned int GetCount() {
+        return tableCount;
+    }
+
+    unsigned int GetSize() {
+        return tableSize;
+    }
+
 private:
     unsigned int tableSize;
     unsigned int tableCount;

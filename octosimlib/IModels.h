@@ -80,6 +80,14 @@ public:
 
     virtual void ApplicationInput(ISimMessage * message) = 0; /* input from the application, immediate */
     virtual void Input(ISimMessage * message) = 0; /* input from the network */
+    virtual void ResetTimer(unsigned long long delay);
+    virtual void RttUpdate(unsigned long long transmitTime, unsigned long long arrivalTime);
+
+    int nb_timers_outstanding;
+    unsigned long long next_timer;
+
+    unsigned long long rtt;
+    unsigned long long rtt_dev;
 
 private:
     IApplication * application;

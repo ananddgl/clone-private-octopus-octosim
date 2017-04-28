@@ -13,6 +13,8 @@ DnsStub::DnsStub(SimulationLoop * loop, FILE* FStats,
     source_process(source_process),
     nb_packets_sent(0),
     nb_transactions_complete(0),
+    nb_duplicate_transactions(0),
+    next_target_id(0),
     IApplication(loop)
 {
 }
@@ -34,25 +36,33 @@ void DnsStub::Input(ISimMessage * message)
 {
     DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
     /* If this is a response, write a summary line */
-    if (dm != NULL && dm->messageCode != DnsMessageCode::query)
+    if (dm != NULL && dm->messageCode != DnsMessageCode::query )
     {
-        if (dm->messageCode == DnsMessageCode::response)
+        if (completedCache.Retrieve(dm->qtarget_id))
         {
-            nb_transactions_complete++;
+            nb_duplicate_transactions++;
         }
-        if (FStats != NULL)
+        else
         {
-            unsigned long long arrival = GetLoop()->SimulationTime();
-            fprintf(FStats,
-                """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%d""\n",
-                arrival,
-                dm->creation_time,
-                arrival - dm->creation_time,
-                dm->CodeToText(),
-                dm->query_id,
-                dm->qtarget_id,
-                dm->udp_repeat_counter
-            );
+            completedCache.Insert(dm->qtarget_id);
+            if (dm->messageCode == DnsMessageCode::response)
+            {
+                nb_transactions_complete++;
+            }
+            if (FStats != NULL)
+            {
+                unsigned long long arrival = GetLoop()->SimulationTime();
+                fprintf(FStats,
+                    """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%d""\n",
+                    arrival,
+                    dm->creation_time,
+                    arrival - dm->creation_time,
+                    dm->CodeToText(),
+                    dm->query_id,
+                    dm->qtarget_id,
+                    dm->udp_repeat_counter
+                );
+            }
         }
     }
     if (message->Dereference())
@@ -68,10 +78,12 @@ void DnsStub::Input(ISimMessage * message)
 void DnsStub::TimerExpired(unsigned long long simulationTime)
 {
     /* Create a transaction */
+    next_target_id++;
+
     DnsMessage * dm = new DnsMessage(
         GetLoop()->SimulationTime(),
         GetLoop()->Rnd()->GetRandom64(),
-        GetLoop()->Rnd()->GetRandom64());
+        next_target_id); // GetLoop()->Rnd()->GetRandom64());
 
     if (dm != NULL)
     {

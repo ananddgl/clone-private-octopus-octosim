@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include "WriteOnceHash.h"
 #include "IModels.h"
 
 class DnsStub : public IApplication
@@ -18,5 +19,10 @@ public:
     IDelayDistribution * source_process;
     int nb_packets_sent;
     int nb_transactions_complete;
+    int nb_duplicate_transactions;
+    unsigned long long next_target_id;
+
+    WriteOnceHash completedCache;
+
 };
 

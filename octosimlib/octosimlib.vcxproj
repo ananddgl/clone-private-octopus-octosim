@@ -142,6 +142,7 @@
     <ClInclude Include="MessageTree.h" />
     <ClInclude Include="SimulationLoop.h" />
     <ClInclude Include="SimulationRandom.h" />
+    <ClInclude Include="TcpSim.h" />
     <ClInclude Include="WriteOnceHash.h" />
   </ItemGroup>
   <ItemGroup>
@@ -155,6 +156,7 @@
     <ClCompile Include="MessageTree.cpp" />
     <ClCompile Include="SimulationLoop.cpp" />
     <ClCompile Include="SimulationRandom.cpp" />
+    <ClCompile Include="TcpSim.cpp" />
     <ClCompile Include="WriteOnceHash.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

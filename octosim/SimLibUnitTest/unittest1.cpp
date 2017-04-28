@@ -4,6 +4,7 @@
 #include "../octosimtest/SimRandomTest.h"
 #include "../octosimtest/SimLoopTest.h"
 #include "../octosimtest/DnsUdpSimTest.h"
+#include "../octosimtest/WriteOnceTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -41,6 +42,16 @@ namespace SimLibUnitTest
             bool ret = slt.SimLoopDoTest();
 
             Assert::IsTrue(ret, L"Sim loop test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestWriteOnce)
+        {
+            // TODO: Your test code here
+            WriteOnceTest wot;
+
+            bool ret = wot.WriteOnceDoTest();
+
+            Assert::IsTrue(ret, L"Write once test should succeed"); (ret == true);
         }
 
         TEST_METHOD(TestDnsUdpSim)

@@ -21,10 +21,7 @@ DnsUdpSimTest::~DnsUdpSimTest()
 
 bool DnsUdpSimTest::DnsUdpSimDoTest()
 {
-#if 1
-    bool ret = DoOneTest(400, 7500, 0.01);
-#else
-    bool ret = DoOneTest(1, 7500, 0);
+    bool ret = DoOneTest(10, 7500, 0.2);
 
     if (ret)
     {
@@ -40,7 +37,7 @@ bool DnsUdpSimTest::DnsUdpSimDoTest()
     {
         ret = DoOneTest(400, 7500, 0.01);
     }
-#endif
+
     return ret;
 }
 

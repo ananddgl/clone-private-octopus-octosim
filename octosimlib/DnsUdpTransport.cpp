@@ -11,16 +11,11 @@
  * Upon sending a message, keep a copy.
  */
 
-
-
 DnsUdpTransport::DnsUdpTransport(SimulationLoop* loop)
     :
     retransmitQueue(NULL),
-    nextTimer(1000000000ull),
-    rtt(1000000ull),
-    rtt_dev(0ull),
-    nb_timers_outstanding(0),
-    nb_timers_stop(0),
+    // rtt(1000000ull),
+    // rtt_dev(0ull),
     nb_packets_deleted(0),
     ITransport(loop)
 {
@@ -56,7 +51,7 @@ void DnsUdpTransport::ApplicationInput(ISimMessage * message)
             dm->Reference();
             dm->next_in_queue = retransmitQueue;
             retransmitQueue = dm;
-            dm->current_udp_timer = rtt;
+            dm->current_udp_timer = rtt + 2*rtt_dev;
             dm->transmit_time = GetLoop()->SimulationTime();
             ResetTimer(dm->current_udp_timer);
         }
@@ -91,6 +86,7 @@ void DnsUdpTransport::Input(ISimMessage * message)
                 {
                     *previous = next->next_in_queue;
                     next->next_in_queue = NULL;
+                    RttUpdate(next->transmit_time, GetLoop()->SimulationTime());
                     if (next->Dereference())
                     {
                         delete next;
@@ -123,14 +119,14 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
     else
         nb_timers_outstanding = 0;
 
-    if (simulationTime >= nextTimer || nb_timers_outstanding <= 0)
+    if (simulationTime >= next_timer || nb_timers_outstanding <= 0)
     {
         /* Find all the pending messages larger than simulation time */
         DnsMessage * dm = retransmitQueue;
         DnsMessage ** previous = &retransmitQueue;
         unsigned long long min_timer = 10000000;
 
-        nextTimer = simulationTime;
+        next_timer = simulationTime;
 
         while (dm != NULL)
         {
@@ -187,19 +183,3 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
             ResetTimer(min_timer);
     }
 }
-
-void DnsUdpTransport::ResetTimer(unsigned long long delay)
-{
-    /* Note that we do not bother deleting the old timers. */
-    if ( nb_timers_outstanding == 0 || (GetLoop()->SimulationTime() + delay) < nextTimer)
-    {
-        nextTimer = GetLoop()->SimulationTime() + delay;
-        nb_timers_outstanding++;
-        GetLoop()->RequestTimer(delay, this);
-    }
-    else
-    {
-        nb_timers_stop++;
-    }
-}
-

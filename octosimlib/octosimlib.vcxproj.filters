@@ -54,6 +54,9 @@
     <ClInclude Include="DnsAuthoritative.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TcpSim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IModels.cpp">
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DnsAuthoritative.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpSim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

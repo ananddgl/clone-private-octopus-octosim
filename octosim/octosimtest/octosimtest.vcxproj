@@ -140,6 +140,7 @@
     <ClInclude Include="SimLoopTest.h" />
     <ClInclude Include="SimRandomTest.h" />
     <ClInclude Include="TestModels.h" />
+    <ClInclude Include="WriteOnceTest.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DnsUdpSimTest.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="SimLoopTest.cpp" />
     <ClCompile Include="SimRandomTest.cpp" />
     <ClCompile Include="TestModels.cpp" />
+    <ClCompile Include="WriteOnceTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
