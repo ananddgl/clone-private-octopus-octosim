@@ -1,5 +1,6 @@
 #pragma once
 #include "IModels.h"
+#include "WriteOnceHash.h"
 
 class SimulationLoop;
 class IDelayDistribution;
@@ -20,4 +21,5 @@ public:
 private:
     DnsRecursive * recursive;
     IDelayDistribution * authoritative_model;
+    WriteOnceHash simulatedCache;
 };

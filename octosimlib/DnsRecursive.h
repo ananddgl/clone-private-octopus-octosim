@@ -11,7 +11,6 @@ public:
     ~DnsRecursive();
 
     DnsAuthoritative authoritative;
-    WriteOnceHash simulatedCache;
 
     // Inherited via IApplication
     virtual void Input(ISimMessage * message) override;

@@ -28,16 +28,8 @@ void DnsRecursive::Input(ISimMessage * message)
         DnsMessage * r = dm->CreateResponse();
         if (r != NULL)
         {
-            /* If the query is in the cache, respond directly. */
-            if (simulatedCache.Retrieve(r->qtarget_id))
-            {
-                GetTransport()->ApplicationInput(r);
-            }
-            else
-            {
-                /* If not in cache, send to authoritative. */
-                authoritative.RecursiveInput(r);
-            }
+            /* send to authoritative. This avoids sending messages directly from within a call back */
+            authoritative.RecursiveInput(r);
         }
     }
 
@@ -55,7 +47,6 @@ void DnsRecursive::AuthoritativeInput(ISimMessage * message)
     /* Add the results to the cache. */
     if (dm != NULL) 
     {
-        (void)simulatedCache.Insert(dm->qtarget_id);
         /* These are new results, send the response. */
         GetTransport()->ApplicationInput(dm);
     }

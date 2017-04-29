@@ -3,23 +3,23 @@
 #include "../octosimlib/SimulationLoop.h"
 #include "../octosimlib/DnsRecursive.h"
 #include "../octosimlib/DnsStub.h"
-#include "../octosimlib/DnsUdpTransport.h"
+#include "../octosimlib/TcpSim.h"
 #include "../octosimlib/LossyLink.h"
 #include "TestModels.h"
-#include "DnsUdpSimTest.h"
+#include "DnsTcpSimTest.h"
 
 
 
-DnsUdpSimTest::DnsUdpSimTest()
+DnsTcpSimTest::DnsTcpSimTest()
 {
 }
 
 
-DnsUdpSimTest::~DnsUdpSimTest()
+DnsTcpSimTest::~DnsTcpSimTest()
 {
 }
 
-bool DnsUdpSimTest::DnsUdpSimDoTest()
+bool DnsTcpSimTest::DnsTcpSimDoTest()
 {
     bool ret = DoOneTest(1, 7500, 0);
 
@@ -41,7 +41,7 @@ bool DnsUdpSimTest::DnsUdpSimDoTest()
     return ret;
 }
 
-bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
+bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
 {
     bool ret = true;
 
@@ -50,8 +50,8 @@ bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
     TestSimpleDelay * authoritative_process = new TestSimpleDelay(3000, loop);
     DnsStub * stub = new DnsStub(loop, NULL, nbPackets, arrival_process);
     DnsRecursive * recursive = new DnsRecursive(loop, authoritative_process);
-    DnsUdpTransport * transport1 = new DnsUdpTransport(loop);
-    DnsUdpTransport * transport2 = new DnsUdpTransport(loop);
+    TcpSim * transport1 = new TcpSim(loop);
+    TcpSim * transport2 = new TcpSim(loop);
     LossyLink * path1 = new LossyLink(loop, lossRate, delay);
     LossyLink * path2 = new LossyLink(loop, lossRate, delay);
 

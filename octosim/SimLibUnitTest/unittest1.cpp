@@ -3,8 +3,9 @@
 #include "../octosimtest/MessageTreetest.h"
 #include "../octosimtest/SimRandomTest.h"
 #include "../octosimtest/SimLoopTest.h"
-#include "../octosimtest/DnsUdpSimTest.h"
 #include "../octosimtest/WriteOnceTest.h"
+#include "../octosimtest/DnsUdpSimTest.h"
+#include "../octosimtest/DnsTcpSimTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -62,6 +63,16 @@ namespace SimLibUnitTest
             bool ret = dust.DnsUdpSimDoTest();
 
             Assert::IsTrue(ret, L"Dns Udp Sim test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestDnsTcpSim)
+        {
+            // TODO: Your test code here
+            DnsTcpSimTest dtst;
+
+            bool ret = dtst.DnsTcpSimDoTest();
+
+            Assert::IsTrue(ret, L"Dns Tcp Sim test should succeed"); (ret == true);
         }
 	};
 }
