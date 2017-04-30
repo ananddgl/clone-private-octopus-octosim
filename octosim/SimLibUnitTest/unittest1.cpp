@@ -5,6 +5,8 @@
 #include "../octosimtest/SimLoopTest.h"
 #include "../octosimtest/WriteOnceTest.h"
 #include "../octosimtest/DnsUdpSimTest.h"
+#include "../octosimtest/TcpReorderTest.h"
+#include "../octosimtest/TcpRetransmitTest.h"
 #include "../octosimtest/DnsTcpSimTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -63,6 +65,26 @@ namespace SimLibUnitTest
             bool ret = dust.DnsUdpSimDoTest();
 
             Assert::IsTrue(ret, L"Dns Udp Sim test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestTcpReorder)
+        {
+            // TODO: Your test code here
+            TcpReorderTest trt;
+
+            bool ret = trt.TcpReorderDoTest();
+
+            Assert::IsTrue(ret, L"Tcp reorder test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestTcpRetransmit)
+        {
+            // TODO: Your test code here
+            TcpRetransmitTest trt;
+
+            bool ret = trt.TcpRetransmitDoTest();
+
+            Assert::IsTrue(ret, L"Tcp Retransmit test should succeed"); (ret == true);
         }
 
         TEST_METHOD(TestDnsTcpSim)

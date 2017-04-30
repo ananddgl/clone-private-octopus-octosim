@@ -3,17 +3,14 @@
 #include "SimulationLoop.h"
 #include "TcpSim.h"
 
-
-
 TcpSim::TcpSim(SimulationLoop* loop)
     :
+#if 0
     retransmitQueue(NULL),
     retransmitQueueLast(NULL),
-    reorderQueue(NULL),
     last_sequence_number_sent(0),
     ack_received(0),
-    last_sequence_received(0),
-    last_sequence_processed(0),
+#endif
     tcp_idle_timeout(20000000ull),
     rtt(1000000ull),
     rtt_dev(0ull),
@@ -50,6 +47,9 @@ void TcpSim::ApplicationInput(ISimMessage * message)
 
     if (tm != NULL)
     {
+#if 1
+        retransmitQueue.AddNewMessage(tm);
+#else
         /* Assign a number, etc. */
         last_sequence_number_sent++;
         tm->sequence = last_sequence_number_sent;
@@ -64,6 +64,7 @@ void TcpSim::ApplicationInput(ISimMessage * message)
             retransmitQueueLast->next_in_reorder = tm;
             retransmitQueueLast = tm;
         }
+#endif
         /* If the connection is not active, send a SYN */
         if (state != connected)
         {
@@ -96,7 +97,9 @@ void TcpSim::Input(ISimMessage * message)
 
     if (tm != NULL)
     {
-        RttUpdate(tm->transmit_time, current_time);
+
+        last_received_time = std::max(tm->transmit_time, last_received_time);
+        RttUpdate(tm->ack_time, current_time);
 
         if (tm->flags == syn)
         {
@@ -114,6 +117,14 @@ void TcpSim::Input(ISimMessage * message)
             {
                 if (state != connected)
                 {
+#if 1
+                    TcpMessage * next;
+
+                    while (next = retransmitQueue.NextToRetransmit())
+                    {
+                        SendCopyOfMessage(next);
+                    }
+#else
                     TcpMessage * next = retransmitQueue;
 
                     while (next != NULL)
@@ -121,7 +132,7 @@ void TcpSim::Input(ISimMessage * message)
                         SendCopyOfMessage(next);
                         next = next->next_in_transmit;
                     }
-
+#endif
                 }
                 state = connected;
             }
@@ -141,62 +152,29 @@ void TcpSim::Input(ISimMessage * message)
         else
         {
             /* If this is data, insert in receive queue */
-            if (tm->payload != NULL && tm->sequence > last_sequence_processed)
-            {
-                TcpMessage * next = reorderQueue;
-                TcpMessage ** p_previous = &reorderQueue;
+            if (reorderQueue.Insert(tm)) {
+                ISimMessage * ism;
 
-                while (next != NULL)
+                while ((ism = reorderQueue.DequeueInOrder()) != NULL)
                 {
-                    if (next->sequence == tm->sequence)
-                    {
-                        /* already present*/
-                        break;
-                    }
-                    else if (next->sequence > tm->sequence)
-                    {
-                        /* insert a copy here */
-                        tm->next_in_reorder = next;
-                        *p_previous = tm;
-                        tm->Reference();
-                        break;
-                    }
-                    else
-                    {
-                        /* progress */
-                        p_previous = &next->next_in_reorder;
-                        next = next->next_in_reorder;
-                    }
-                }
-
-                if (next == NULL)
-                {
-                    /* packet is larger than last in queue, or queue is empty */
-                    tm->next_in_reorder = *p_previous;
-                    *p_previous = tm;
-                    tm->Reference();
-                }
-            }
-
-            /* If receive queue is ordered, pass the packets to the application */
-            while (reorderQueue != NULL && reorderQueue->sequence == last_sequence_processed + 1)
-            {
-                TcpMessage * current = reorderQueue;
-                reorderQueue = reorderQueue->next_in_reorder;
-                current->next_in_reorder = NULL;
-
-                GetApplication()->Input(current->payload);
-                current->payload = NULL;
-                last_sequence_processed = current->sequence;
-
-                if (current->Dereference())
-                {
-                    delete current;
+                    GetApplication()->Input(ism);
                 }
             }
 
             if (tm->flags == ack)
             {
+#if 1
+                TcpMessage * next;
+
+                retransmitQueue.ApplyAck(tm);
+                /* Now, schedule the NAK values for retransmission, if they were not
+                 * recently retransmitted */
+                while ((next = retransmitQueue.NextToRetransmit()) != NULL)
+                {
+                    SendCopyOfMessage(next);
+                }
+
+#else
                 TcpMessage * next; 
 
                 /* If this contains ACK/NACK, dequeue ACKed */
@@ -239,6 +217,7 @@ void TcpSim::Input(ISimMessage * message)
                         SendCopyOfMessage(next);
                     }
                 }
+#endif
             }  
         }
     }
@@ -255,23 +234,24 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
     if (state == connected)
     {
         /* If packets due for retransmission, do it */
-        /* TODO: should not retransmit messages that were ACKED! */
-        TcpMessage * next = retransmitQueue;
-        while (next)
+        if (simulationTime > rtt + 2 * rtt_dev)
         {
-            if (next->transmit_time + rtt + 2 * rtt_dev <= simulationTime)
+            TcpMessage * next;
+
+            unsigned long long last_time = simulationTime - rtt - 2 * rtt_dev;
+
+            if (retransmitQueue.ApplyTimer(last_time))
             {
-                SendCopyOfMessage(next);
-            }
-            else
-            {
-                next = next->next_in_transmit;
+                while ((next = retransmitQueue.NextToRetransmit()) != NULL)
+                {
+                    SendCopyOfMessage(next);
+                }
             }
         }
 
         /* If nothing in queues, check whether to hang the connection */
-        if (retransmitQueue == NULL &&
-            reorderQueue == NULL &&
+        if (retransmitQueue.IsEmpty() &&
+            reorderQueue.IsEmpty() &&
             simulationTime > last_transmit_or_receive + tcp_idle_timeout)
         {
             /* Reset because waited too long */
@@ -298,30 +278,12 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
     }
     else if (state == idle)
     {
-        while (reorderQueue != NULL)
-        {
-            /* clean up the reorder queue */
-            TcpMessage * current = reorderQueue;
-            reorderQueue = current->next_in_reorder;
+        reorderQueue.Clean();
 
-            if (current->Dereference())
-            {
-                delete current;
-            }
-        }
-        
-        if (retransmitQueue != NULL)
+        if (!retransmitQueue.IsEmpty())
         {
-            /* Pick a sequence number of the SYN */
-            /* Reset the sequence numbers */
-            TcpMessage * next = retransmitQueue;
-            unsigned long long newSeq = ++last_sequence_number_sent;
-            while (next != NULL)
-            {
-                newSeq++;
-                next->sequence = newSeq;
-                next = next->next_in_transmit;
-            }
+            retransmitQueue.ResetBeforeSyn();
+
             /* Send a SYN packet */
             SendControlMessage(syn);
         }
@@ -336,32 +298,13 @@ void TcpSim::SendControlMessage(TcpMessageCode code)
     if (ctrl != NULL)
     {
         ctrl->flags = code;
+        ctrl->transmit_time = last_transmit_or_receive;
+        ctrl->ack_time = last_received_time;
         GetPath()->Input(ctrl);
         ResetTimer(rtt + 2 * rtt_dev);
     }
 }
 
-void TcpSim::FillAckData(TcpMessage * tm)
-{
-    int nack_number = 0;
-    unsigned long long expected_sequence = last_sequence_processed + 1;
-    TcpMessage * next = reorderQueue;
-
-    tm->ack_number = last_sequence_processed;
-
-    while (next != NULL && nack_number < 16)
-    {
-        while (expected_sequence < next->sequence && nack_number < 16)
-        {
-            tm->nack[nack_number] = expected_sequence;
-            expected_sequence++;
-            nack_number++;
-        }
-        expected_sequence = next->sequence + 1;
-        next = next->next_in_reorder;
-    }
-    tm->nb_nack = nack_number;
-}
 
 void TcpSim::SendCopyOfMessage(TcpMessage * tm)
 {
@@ -372,8 +315,11 @@ void TcpSim::SendCopyOfMessage(TcpMessage * tm)
 
     if (temp != NULL)
     {
-        FillAckData(temp);
+        reorderQueue.FillAckData(temp);
+        // FillAckData(temp);
         temp->flags = ack;
+        temp->transmit_time = tm->transmit_time;
+        temp->ack_time = last_received_time;
         GetPath()->Input(temp);
 
         ResetTimer(rtt + 2 * rtt_dev);
@@ -390,9 +336,11 @@ TcpMessage::TcpMessage(ISimMessage * payload)
     ack_number(0),
     nb_nack(0),
     transmit_time(0),
+    ack_time(0),
     ISimMessage()
 {
-    memset(nack, 0, sizeof(nack));
+    memset(ack_range_first, 0, sizeof(ack_range_first));
+    memset(ack_range_last, 0, sizeof(ack_range_last));
     if (payload != NULL)
     {
         payload->Reference();
@@ -416,4 +364,288 @@ TcpMessage * TcpMessage::Copy()
         tm->transmit_time = transmit_time;
     }
     return tm;
+}
+
+TcpSimReorderQueue::TcpSimReorderQueue()
+    :
+    reorderQueue(NULL),
+    last_sequence_received(0),
+    last_sequence_processed(0)
+{
+}
+
+TcpSimReorderQueue::~TcpSimReorderQueue()
+{
+    Clean();
+}
+
+bool TcpSimReorderQueue::Insert(TcpMessage * tm)
+{
+    bool ret = (tm->payload != NULL && tm->sequence > last_sequence_processed);
+
+    if (ret)
+    {
+        TcpMessage * next = reorderQueue;
+        TcpMessage ** p_previous = &reorderQueue;
+
+        while (next != NULL)
+        {
+            if (next->sequence == tm->sequence)
+            {
+                /* already present*/
+                ret = false;
+                break;
+            }
+            else if (next->sequence > tm->sequence)
+            {
+                /* insert a copy here */
+                tm->next_in_reorder = next;
+                *p_previous = tm;
+                tm->Reference();
+                break;
+            }
+            else
+            {
+                /* progress */
+                p_previous = &next->next_in_reorder;
+                next = next->next_in_reorder;
+            }
+        }
+
+        if (next == NULL)
+        {
+            /* packet is larger than last in queue, or queue is empty */
+            tm->next_in_reorder = *p_previous;
+            *p_previous = tm;
+            tm->Reference();
+        }
+    }
+
+    return ret;
+}
+
+ISimMessage * TcpSimReorderQueue::DequeueInOrder()
+{
+    ISimMessage * ret = NULL;
+
+    /* If receive queue is ordered, pass the packets to the application */
+    if (reorderQueue != NULL && reorderQueue->sequence == last_sequence_processed + 1)
+    {
+        TcpMessage * current = reorderQueue;
+        reorderQueue = reorderQueue->next_in_reorder;
+        current->next_in_reorder = NULL;
+
+        ret = current->payload;
+        current->payload = NULL;
+        last_sequence_processed = current->sequence;
+
+        if (current->Dereference())
+        {
+            delete current;
+        }
+    }
+
+    return ret;
+}
+
+void TcpSimReorderQueue::FillAckData(TcpMessage * tm)
+{
+    int nack_number = 0;
+    unsigned long long end_of_range;
+    TcpMessage * next = reorderQueue;
+
+    tm->ack_number = last_sequence_processed;
+
+    while (next != NULL && nack_number < 16)
+    {
+        tm->ack_range_first[nack_number] = next->sequence;
+        end_of_range = next->sequence;
+        while ((next = next->next_in_reorder) != NULL)
+        {
+            if (next->sequence == end_of_range + 1)
+            {
+                end_of_range++;
+            }
+            else
+            {
+                break;
+            }
+        }
+        tm->ack_range_last[nack_number] = end_of_range;
+        nack_number++;
+    }
+    tm->nb_nack = nack_number;
+}
+
+void TcpSimReorderQueue::Clean()
+{
+    while (reorderQueue != NULL)
+    {
+        /* clean up the reorder queue */
+        TcpMessage * current = reorderQueue;
+        reorderQueue = current->next_in_reorder;
+
+        if (current->Dereference())
+        {
+            delete current;
+        }
+    }
+}
+
+TcpSimRetransmitQueue::TcpSimRetransmitQueue()
+    : 
+    retransmitQueue(NULL),
+    retransmitQueueLast(NULL),
+    last_sequence_number_sent(0),
+    last_retransmit_sequence(0),
+    last_transmit_time_acked(0),
+    furthest_ack_range(0),
+    ack_received(0)
+{
+}
+
+TcpSimRetransmitQueue::~TcpSimRetransmitQueue()
+{
+}
+
+void TcpSimRetransmitQueue::AddNewMessage(TcpMessage * tm)
+{
+    /* Assign a number, etc. */
+    last_sequence_number_sent++;
+    tm->sequence = last_sequence_number_sent;
+    /* Add at the end of the queue */
+    if (retransmitQueueLast == NULL)
+    {
+        retransmitQueue = tm;
+        retransmitQueueLast = tm;
+    }
+    else
+    {
+        retransmitQueueLast->next_in_reorder = tm;
+        retransmitQueueLast = tm;
+    }
+}
+
+/*
+ * RACK based retransmission. Packets should be retransmitted if they are
+ * not acknowledged and if packets sent after them have been already
+ * received.
+ */
+
+TcpMessage * TcpSimRetransmitQueue::NextToRetransmit()
+{
+    TcpMessage * next = retransmitQueue;
+
+    while (next != NULL)
+    {
+        if (next->transmit_time < last_transmit_time_acked)
+        {
+            break;
+        }
+        else
+        {
+            next = next->next_in_transmit;
+        }
+    }
+
+    return next;
+}
+
+/*
+ * Upon receiving acks, remove all acknowledged packets from the retransmit queue.
+ * Update the ack_received and furthest_ack_range variables.
+ */
+
+void TcpSimRetransmitQueue::ApplyAck(TcpMessage * tm)
+{
+    TcpMessage * next;
+    TcpMessage * previous;
+
+    /* Update the last time seen */
+    last_transmit_time_acked = std::max(last_transmit_time_acked, tm->ack_time);
+
+    /* If this contains ACK/NACK, dequeue ACKed */
+    if (ack_received < tm->ack_number)
+    {
+        ack_received = tm->ack_number;
+        furthest_ack_range = std::max(furthest_ack_range, ack_received);
+    }
+
+    while (retransmitQueue && retransmitQueue->sequence <= ack_received)
+    {
+        TcpMessage * current = retransmitQueue;
+        retransmitQueue = retransmitQueue->next_in_transmit;
+        current->next_in_transmit = NULL;
+
+        if (current->Dereference())
+        {
+            delete current;
+        }
+    }
+
+    /* Apply the ack ranges, and remove acked messages from the queue */
+    next = retransmitQueue;
+    TcpMessage ** p_previous = &retransmitQueue;
+    previous = NULL;
+
+    for (unsigned int i = 0; next != NULL && i < tm->nb_nack; i++)
+    {
+        while (next != NULL && next->sequence < tm->ack_range_first[i])
+        {
+            previous = next;
+            p_previous = &next->next_in_transmit;
+            next = next->next_in_transmit;
+        }
+
+        while (next != NULL && next->sequence <= tm->ack_range_last[i])
+        {
+            TcpMessage * current = next;
+            *p_previous = next->next_in_transmit;
+            next = next->next_in_transmit;
+
+            if (current->Dereference())
+            {
+                delete current;
+            }
+        }
+
+        furthest_ack_range = std::max(furthest_ack_range, tm->ack_range_last[i]);
+    }
+
+    if (next == NULL)
+    {
+        retransmitQueueLast = previous;
+    }
+}
+
+/*
+ * Timer logic. If there was nothing received since that date,
+ * return true. The next call to the retransmit logic will retransmit
+ * the necessary packets.
+ */
+
+bool TcpSimRetransmitQueue::ApplyTimer(unsigned long long lastTransmitTime)
+{
+    bool ret = false;
+
+    if (lastTransmitTime > last_transmit_time_acked)
+    {
+        ret = true;
+        last_transmit_time_acked = lastTransmitTime;
+    }
+    return ret;
+}
+
+void TcpSimRetransmitQueue::ResetBeforeSyn()
+{ 
+    /* Pick a sequence number of the SYN */
+    /* Reset the sequence numbers */
+    TcpMessage * next = retransmitQueue;
+    unsigned long long newSeq = ++last_sequence_number_sent;
+    while (next != NULL)
+    {
+        newSeq++;
+        next->sequence = newSeq;
+        next = next->next_in_transmit;
+    }
 }

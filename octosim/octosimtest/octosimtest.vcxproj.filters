@@ -39,6 +39,12 @@
     <ClInclude Include="DnsTcpSimTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TcpReorderTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpRetransmitTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageTreetest.cpp">
@@ -60,6 +66,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DnsTcpSimTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpReorderTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpRetransmitTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

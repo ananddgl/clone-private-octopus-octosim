@@ -140,6 +140,8 @@
     <ClInclude Include="MessageTreetest.h" />
     <ClInclude Include="SimLoopTest.h" />
     <ClInclude Include="SimRandomTest.h" />
+    <ClInclude Include="TcpReorderTest.h" />
+    <ClInclude Include="TcpRetransmitTest.h" />
     <ClInclude Include="TestModels.h" />
     <ClInclude Include="WriteOnceTest.h" />
   </ItemGroup>
@@ -149,6 +151,8 @@
     <ClCompile Include="MessageTreetest.cpp" />
     <ClCompile Include="SimLoopTest.cpp" />
     <ClCompile Include="SimRandomTest.cpp" />
+    <ClCompile Include="TcpReorderTest.cpp" />
+    <ClCompile Include="TcpRetransmitTest.cpp" />
     <ClCompile Include="TestModels.cpp" />
     <ClCompile Include="WriteOnceTest.cpp" />
   </ItemGroup>

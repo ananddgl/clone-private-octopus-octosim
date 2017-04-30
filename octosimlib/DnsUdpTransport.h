@@ -14,6 +14,7 @@ public:
     virtual void TimerExpired(unsigned long long simulationTime) override;
 
     DnsMessage * retransmitQueue;
+    unsigned long long last_received_time;
     int nb_packets_deleted;
 };
 

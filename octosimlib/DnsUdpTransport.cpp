@@ -17,6 +17,7 @@ DnsUdpTransport::DnsUdpTransport(SimulationLoop* loop)
     // rtt(1000000ull),
     // rtt_dev(0ull),
     nb_packets_deleted(0),
+    last_received_time(0),
     ITransport(loop)
 {
 }
@@ -53,6 +54,7 @@ void DnsUdpTransport::ApplicationInput(ISimMessage * message)
             retransmitQueue = dm;
             dm->current_udp_timer = rtt + 2*rtt_dev;
             dm->transmit_time = GetLoop()->SimulationTime();
+            dm->ack_time = last_received_time;
             ResetTimer(dm->current_udp_timer);
         }
 
@@ -73,6 +75,8 @@ void DnsUdpTransport::Input(ISimMessage * message)
 
     if (dm != NULL)
     {
+        last_received_time = std::max(last_received_time, dm->transmit_time);
+
         if (dm->messageCode != DnsMessageCode::query)
         {
             /* Find the message that this response acknowledges */
@@ -86,7 +90,7 @@ void DnsUdpTransport::Input(ISimMessage * message)
                 {
                     *previous = next->next_in_queue;
                     next->next_in_queue = NULL;
-                    RttUpdate(next->transmit_time, GetLoop()->SimulationTime());
+                    RttUpdate(next->ack_time, GetLoop()->SimulationTime());
                     if (next->Dereference())
                     {
                         delete next;

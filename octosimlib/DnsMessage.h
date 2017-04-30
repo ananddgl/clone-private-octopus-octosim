@@ -25,9 +25,9 @@ public:
     unsigned long long qtarget_id;
     DnsMessage * next_in_queue;
     unsigned long long transmit_time;
+    unsigned long long ack_time; /* in responses, the time at which the last message was received */
     unsigned long long current_udp_timer;
     int udp_repeat_counter;
     DnsMessageCode messageCode;
-
 };
 

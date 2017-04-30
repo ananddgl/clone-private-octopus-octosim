@@ -33,10 +33,53 @@ public:
     unsigned long long sequence;
     unsigned long long ack_number;
     unsigned int nb_nack;
-    unsigned long long nack[16];
+    unsigned long long ack_range_first[16];
+    unsigned long long ack_range_last[16];
     unsigned long long transmit_time;
+    unsigned long long ack_time;
 
     ISimMessage * payload;
+};
+
+class TcpSimReorderQueue
+{
+public:
+    TcpSimReorderQueue();
+    ~TcpSimReorderQueue();
+
+    bool Insert(TcpMessage * tm);
+    ISimMessage * DequeueInOrder();
+    void FillAckData(TcpMessage * tm);
+    bool IsEmpty() { return reorderQueue == NULL; }
+    void Clean();
+
+    TcpMessage * reorderQueue;
+    unsigned long long last_sequence_received;
+    unsigned long long last_sequence_processed;
+};
+
+class TcpSimRetransmitQueue
+{
+public:
+    TcpSimRetransmitQueue();
+    ~TcpSimRetransmitQueue();
+
+    void AddNewMessage(TcpMessage * tm);
+    TcpMessage * NextToRetransmit();
+    void ApplyAck(TcpMessage * tm);
+    bool ApplyTimer(unsigned long long lastTransmitTime);
+    bool IsEmpty() {
+        return (retransmitQueue == NULL); 
+    }
+    void ResetBeforeSyn();
+
+    TcpMessage * retransmitQueue;
+    TcpMessage * retransmitQueueLast;
+    unsigned long long last_retransmit_sequence;
+    unsigned long long last_transmit_time_acked;
+    unsigned long long furthest_ack_range;
+    unsigned long long last_sequence_number_sent;
+    unsigned long long ack_received;
 };
 
 class TcpSim : public ITransport
@@ -49,15 +92,17 @@ public:
     virtual void ApplicationInput(ISimMessage * message) override;
     virtual void Input(ISimMessage * message) override;
     virtual void TimerExpired(unsigned long long simulationTime) override;
-
+#if 1
+    TcpSimRetransmitQueue retransmitQueue;
+#else
     TcpMessage * retransmitQueue;
     TcpMessage * retransmitQueueLast;
-    TcpMessage * reorderQueue;
     unsigned long long last_sequence_number_sent;
     unsigned long long ack_received;
-    unsigned long long last_sequence_received;
-    unsigned long long last_sequence_processed;
+#endif
+    TcpSimReorderQueue reorderQueue;
     unsigned long long last_transmit_or_receive;
+    unsigned long long last_received_time;
     unsigned long long tcp_idle_timeout;
     unsigned long long rtt;
     unsigned long long rtt_dev;
@@ -66,7 +111,6 @@ public:
     int nb_packets_deleted;
 private:
     void SendControlMessage(TcpMessageCode code);
-    void FillAckData(TcpMessage * tm);
     void SendCopyOfMessage(TcpMessage * tm);
 };
 
