@@ -139,6 +139,7 @@
     <ClInclude Include="DnsUdpSimTest.h" />
     <ClInclude Include="MessageTreetest.h" />
     <ClInclude Include="SimLoopTest.h" />
+    <ClInclude Include="SimpleTcpSimTest.h" />
     <ClInclude Include="SimRandomTest.h" />
     <ClInclude Include="TcpReorderTest.h" />
     <ClInclude Include="TcpRetransmitTest.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="DnsUdpSimTest.cpp" />
     <ClCompile Include="MessageTreetest.cpp" />
     <ClCompile Include="SimLoopTest.cpp" />
+    <ClCompile Include="SimpleTcpSimTest.cpp" />
     <ClCompile Include="SimRandomTest.cpp" />
     <ClCompile Include="TcpReorderTest.cpp" />
     <ClCompile Include="TcpRetransmitTest.cpp" />

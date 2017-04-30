@@ -305,7 +305,6 @@ void TcpSim::SendControlMessage(TcpMessageCode code)
     }
 }
 
-
 void TcpSim::SendCopyOfMessage(TcpMessage * tm)
 {
     TcpMessage * temp = tm->Copy();
@@ -521,7 +520,7 @@ void TcpSimRetransmitQueue::AddNewMessage(TcpMessage * tm)
     }
     else
     {
-        retransmitQueueLast->next_in_reorder = tm;
+        retransmitQueueLast->next_in_transmit = tm;
         retransmitQueueLast = tm;
     }
 }
@@ -538,7 +537,7 @@ TcpMessage * TcpSimRetransmitQueue::NextToRetransmit()
 
     while (next != NULL)
     {
-        if (next->transmit_time < last_transmit_time_acked)
+        if (next->transmit_time <= last_transmit_time_acked)
         {
             break;
         }

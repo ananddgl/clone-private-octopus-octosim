@@ -8,6 +8,7 @@
 #include "../octosimtest/TcpReorderTest.h"
 #include "../octosimtest/TcpRetransmitTest.h"
 #include "../octosimtest/DnsTcpSimTest.h"
+#include "../octosimtest/SimpleTcpSimTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -85,6 +86,16 @@ namespace SimLibUnitTest
             bool ret = trt.TcpRetransmitDoTest();
 
             Assert::IsTrue(ret, L"Tcp Retransmit test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestSimpleTcpSim)
+        {
+            // TODO: Your test code here
+            SimpleTcpSimTest stst;
+
+            bool ret = stst.SimpleTcpSimDoTest();
+
+            Assert::IsTrue(ret, L"Dns Tcp Sim test should succeed"); (ret == true);
         }
 
         TEST_METHOD(TestDnsTcpSim)
