@@ -28,6 +28,8 @@ public:
 
     virtual void Log(FILE* LogFile, bool dropped) override;
 
+    const char * CodeToText();
+
     TcpMessage * next_in_transmit;
     TcpMessage * next_in_reorder;
 

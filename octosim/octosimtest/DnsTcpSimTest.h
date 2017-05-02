@@ -1,4 +1,6 @@
 #pragma once
+#include <stdio.h>
+
 class DnsTcpSimTest
 {
 public:
@@ -7,6 +9,6 @@ public:
 
     bool DnsTcpSimDoTest();
 private:
-    bool DoOneTest(int nbPackets, int delay, double lossRate);
+    bool DoOneTest(int nbPackets, int delay, double lossRate, FILE* F = NULL);
 };
 

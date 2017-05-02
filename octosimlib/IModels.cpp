@@ -43,6 +43,7 @@ void ISimMessage::Log(FILE * LogFile, bool dropped)
 
 ISimObject::ISimObject(SimulationLoop * loop)
     :
+    object_number(loop->GetNextObjectNumber()),
     loop(loop)
 {
 }

@@ -18,6 +18,8 @@ public:
 
     bool Init();
 
+    unsigned int GetNextObjectNumber() { return ++next_object; };
+
     bool SubmitMessage(unsigned long long delta_t, ISimObject * target, ISimMessage * message);
 
     bool RequestTimer(unsigned long long delta_t, ISimObject * requester);
@@ -33,6 +35,8 @@ public:
     FILE* LogFile;
 
 private:
+    /* Counter of created objects */
+    unsigned int next_object;
     /* Sorted list of events*/
     MessageTree * eventTree;
     unsigned long long simulationTime;

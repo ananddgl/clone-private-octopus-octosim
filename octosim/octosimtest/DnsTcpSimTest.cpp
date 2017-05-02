@@ -21,7 +21,13 @@ DnsTcpSimTest::~DnsTcpSimTest()
 
 bool DnsTcpSimTest::DnsTcpSimDoTest()
 {
-    bool ret = DoOneTest(1, 7500, 0);
+    bool ret = true;
+    FILE * F = fopen("TcpDnsTest.txt", "w");
+
+    if (ret)
+    {
+        DoOneTest(1, 7500, 0);
+    }
 
     if (ret)
     {
@@ -30,7 +36,7 @@ bool DnsTcpSimTest::DnsTcpSimDoTest()
 
     if (ret)
     {
-        ret = DoOneTest(10, 7500, 0.2);
+        ret = DoOneTest(10, 7500, 0.2, F);
     }
 
     if (ret)
@@ -38,14 +44,18 @@ bool DnsTcpSimTest::DnsTcpSimDoTest()
         ret = DoOneTest(400, 7500, 0.01);
     }
 
+    if (F != NULL)
+    {
+        fclose(F);
+    }
     return ret;
 }
 
-bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
+bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE* F)
 {
     bool ret = true;
 
-    SimulationLoop * loop = new SimulationLoop();
+    SimulationLoop * loop = new SimulationLoop(F);
     TestSimpleDelay * arrival_process = new TestSimpleDelay(5000, loop);
     TestSimpleDelay * authoritative_process = new TestSimpleDelay(3000, loop);
     DnsStub * stub = new DnsStub(loop, NULL, nbPackets, arrival_process);

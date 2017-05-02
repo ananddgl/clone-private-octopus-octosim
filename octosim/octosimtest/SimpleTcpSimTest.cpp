@@ -52,7 +52,7 @@ bool SimpleTcpSimTest::DoOneTest(int nbPackets, int delta_t, int delay, double l
 {
     bool ret = true;
     int nb_loops = 0;
-    int max_loops = nbPackets * 32;
+    int max_loops = 64 + nbPackets * 32;
 
     SimulationLoop * loop = new SimulationLoop(F);
     TestSource * source = new TestSource(loop, nbPackets);

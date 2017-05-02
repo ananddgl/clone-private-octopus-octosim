@@ -24,6 +24,7 @@ void LossyLink::Input(ISimMessage * message)
 
     if (GetLoop()->LogFile != NULL)
     {
+        fprintf(GetLoop()->LogFile, "Link(%u) ", object_number);
         message->Log(GetLoop()->LogFile, d < lossRate);
     }
 

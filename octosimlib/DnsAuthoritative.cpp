@@ -31,6 +31,15 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
         /* Insertion fails if already in cache */
         delay = 0;
     }
+    /* Log if useful */
+    if (GetLoop()->LogFile != NULL)
+    {
+        fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llx, delay = %llu\n",
+            object_number,
+            dm->CodeToText(),
+            dm->qtarget_id,
+            delay);
+    }
     /* Delayed input */
     GetLoop()->SubmitMessage(delay, this, message);
 }

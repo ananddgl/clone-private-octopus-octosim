@@ -6,6 +6,7 @@
 
 SimulationLoop::SimulationLoop(FILE * LogFile)
     :
+    next_object(0),
     eventTree(NULL),
     simulationTime(0),
     eventCounter(0),

@@ -27,6 +27,7 @@ public:
     virtual void TimerExpired(unsigned long long simulationTime) {}
 
     SimulationLoop * GetLoop() { return loop; }
+    unsigned int object_number;
 private:
     SimulationLoop * loop;
 };
