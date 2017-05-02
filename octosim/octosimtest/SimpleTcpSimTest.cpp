@@ -16,32 +16,46 @@ SimpleTcpSimTest::~SimpleTcpSimTest()
 
 bool SimpleTcpSimTest::SimpleTcpSimDoTest()
 {
-    bool ret = DoOneTest(1, 2000, 7500, 0);
+    bool ret = true;
+    FILE * F = fopen("TcpSimple.txt", "w");
 
     if (ret)
     {
-        ret = DoOneTest(10, 2000, 7500, 0);
+        ret = DoOneTest(1, 2000, 7500, 0, NULL);
     }
 
     if (ret)
     {
-        ret = DoOneTest(10, 2000, 7500, 0.2);
+        ret = DoOneTest(10, 2000, 7500, 0, NULL);
     }
 
     if (ret)
     {
-        ret = DoOneTest(400, 2000, 7500, 0.01);
+        ret = DoOneTest(10, 2000, 7500, 0.2, NULL);
+    }
+
+    if (ret)
+    {
+        ret = DoOneTest(400, 2000, 7500, 0.01, F);
+    }
+
+    if (F != NULL)
+    {
+        fclose(F);
     }
 
     return ret;
 }
 
-bool SimpleTcpSimTest::DoOneTest(int nbPackets, int delta_t, int delay, double lossRate)
+bool SimpleTcpSimTest::DoOneTest(int nbPackets, int delta_t, int delay, double lossRate,
+    FILE * F)
 {
     bool ret = true;
+    int nb_loops = 0;
+    int max_loops = nbPackets * 32;
 
-    SimulationLoop * loop = new SimulationLoop();
-    TestSource * source = new TestSource(loop);
+    SimulationLoop * loop = new SimulationLoop(F);
+    TestSource * source = new TestSource(loop, nbPackets);
     TestSink * sink = new TestSink(loop);
     TcpSim * transport1 = new TcpSim(loop);
     TcpSim * transport2 = new TcpSim(loop);
@@ -71,10 +85,13 @@ bool SimpleTcpSimTest::DoOneTest(int nbPackets, int delta_t, int delay, double l
 
         loop->RequestTimer(0, source);
 
-        while (loop->DoLoop());
+        while (nb_loops < max_loops && loop->DoLoop()) {
+            nb_loops++;
+        }
 
         if (source->nb_packets_sent != source->nb_packets_to_send ||
-            sink->nb_packets_received != source->nb_packets_sent)
+            sink->nb_packets_received != source->nb_packets_sent ||
+            nb_loops >= max_loops)
         {
             ret = false;
         }

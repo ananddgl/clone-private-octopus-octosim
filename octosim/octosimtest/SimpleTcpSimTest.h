@@ -6,6 +6,6 @@ public:
     ~SimpleTcpSimTest();
 
     bool SimpleTcpSimDoTest();
-    bool DoOneTest(int nbPackets, int delta_t, int delay, double lossRate);
+    bool DoOneTest(int nbPackets, int delta_t, int delay, double lossRate, FILE * F);
 };
 

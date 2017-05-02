@@ -22,6 +22,11 @@ void LossyLink::Input(ISimMessage * message)
 {
     double d = GetLoop()->Rnd()->GetZeroToOne();
 
+    if (GetLoop()->LogFile != NULL)
+    {
+        message->Log(GetLoop()->LogFile, d < lossRate);
+    }
+
     if (d < lossRate)
     {
         messages_dropped++;
@@ -35,4 +40,6 @@ void LossyLink::Input(ISimMessage * message)
         messages_sent++;
         GetLoop()->SubmitMessage(delay, GetTransport(), message);
     }
+
+    
 }

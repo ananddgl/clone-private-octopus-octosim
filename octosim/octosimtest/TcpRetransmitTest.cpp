@@ -23,7 +23,7 @@ bool TcpRetransmitTest::TcpRetransmitDoTest()
     TestMessage * message;
     TcpMessage * tm;
     TcpMessage ack (NULL);
-    TcpMessage * retransmit;
+
     unsigned long long delta_t = 10000;
     unsigned long long rtt = 100000;
     unsigned long long first_sack[1] = { 5 };
@@ -93,7 +93,7 @@ bool TcpRetransmitTest::CheckRetransmit(
     int nb_retransmit = 0;
     TcpMessage * retransmit;
 
-    while (ret && ((retransmit = tsrq->NextToRetransmit()) != NULL))
+    while (ret && ((retransmit = tsrq->NextToRetransmit(false)) != NULL))
     {
         if (nb_retransmit > nb_in_batch)
         {

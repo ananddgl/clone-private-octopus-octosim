@@ -262,7 +262,7 @@ bool TcpReorderTest::CheckAcks(int range_last,
     bool ret = true;
     unsigned long long max_nack = tsrq->last_sequence_processed + 1;
 
-    tsrq->FillAckData(tm);
+    tsrq->FillAckData(tm, tm->transmit_time);
 
     if (tm->ack_number != tsrq->last_sequence_processed)
     {

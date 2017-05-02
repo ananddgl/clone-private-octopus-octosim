@@ -4,13 +4,12 @@
 #include "SimulationRandom.h"
 #include "SimulationLoop.h"
 
-
-
-SimulationLoop::SimulationLoop()
+SimulationLoop::SimulationLoop(FILE * LogFile)
     :
     eventTree(NULL),
     simulationTime(0),
     eventCounter(0),
+    LogFile(LogFile),
     rnd(NULL)
 {
 }

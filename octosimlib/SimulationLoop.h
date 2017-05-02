@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 /*
  * Simulation loop. The "Do loop" message examines the next messages 
  * in the queues
@@ -12,7 +13,7 @@ class ISimMessage;
 class SimulationLoop
 {
 public:
-    SimulationLoop();
+    SimulationLoop(FILE* LogFile = NULL);
     ~SimulationLoop();
 
     bool Init();
@@ -28,6 +29,8 @@ public:
     }
 
     SimulationRandom * Rnd() { return rnd; }
+
+    FILE* LogFile;
 
 private:
     /* Sorted list of events*/

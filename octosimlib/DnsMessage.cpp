@@ -58,3 +58,13 @@ const char * DnsMessage::CodeToText()
     }
     return ret;
 }
+
+void DnsMessage::Log(FILE * LogFile, bool dropped)
+{
+    if (LogFile)
+    {
+        fprintf(LogFile, "%sDNS C:%llu, T:%llu, A:%llu, %s, Id:%llx, QId:%llx\n",
+            (dropped) ? "Dropped " : "", creation_time, transmit_time, ack_time,
+            CodeToText(), query_id, qtarget_id);
+    }
+}

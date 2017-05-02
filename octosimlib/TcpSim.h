@@ -26,6 +26,8 @@ public:
 
     TcpMessage * Copy();
 
+    virtual void Log(FILE* LogFile, bool dropped) override;
+
     TcpMessage * next_in_transmit;
     TcpMessage * next_in_reorder;
 
@@ -49,13 +51,18 @@ public:
 
     bool Insert(TcpMessage * tm);
     ISimMessage * DequeueInOrder();
-    void FillAckData(TcpMessage * tm);
+    bool IsAckNeeded(unsigned long long current_time);
+    void FillAckData(TcpMessage * tm, unsigned long long current_time);
     bool IsEmpty() { return reorderQueue == NULL; }
     void Clean();
 
     TcpMessage * reorderQueue;
+    unsigned long long last_ack_sent;
+    unsigned long long time_last_ack_sent;
     unsigned long long last_sequence_received;
     unsigned long long last_sequence_processed;
+    unsigned long long last_data_received_time;
+    bool dup_received;
 };
 
 class TcpSimRetransmitQueue
@@ -65,7 +72,7 @@ public:
     ~TcpSimRetransmitQueue();
 
     void AddNewMessage(TcpMessage * tm);
-    TcpMessage * NextToRetransmit();
+    TcpMessage * NextToRetransmit(bool force_retransmit);
     void ApplyAck(TcpMessage * tm);
     bool ApplyTimer(unsigned long long lastTransmitTime);
     bool IsEmpty() {
@@ -75,7 +82,6 @@ public:
 
     TcpMessage * retransmitQueue;
     TcpMessage * retransmitQueueLast;
-    unsigned long long last_retransmit_sequence;
     unsigned long long last_transmit_time_acked;
     unsigned long long furthest_ack_range;
     unsigned long long last_sequence_number_sent;
@@ -92,17 +98,11 @@ public:
     virtual void ApplicationInput(ISimMessage * message) override;
     virtual void Input(ISimMessage * message) override;
     virtual void TimerExpired(unsigned long long simulationTime) override;
-#if 1
+
     TcpSimRetransmitQueue retransmitQueue;
-#else
-    TcpMessage * retransmitQueue;
-    TcpMessage * retransmitQueueLast;
-    unsigned long long last_sequence_number_sent;
-    unsigned long long ack_received;
-#endif
     TcpSimReorderQueue reorderQueue;
     unsigned long long last_transmit_or_receive;
-    unsigned long long last_received_time;
+    // unsigned long long last_received_time;
     unsigned long long tcp_idle_timeout;
     unsigned long long rtt;
     unsigned long long rtt_dev;
@@ -110,7 +110,7 @@ public:
 
     int nb_packets_deleted;
 private:
-    void SendControlMessage(TcpMessageCode code);
+    void SendControlMessage(TcpMessageCode code, unsigned long long last_received_time);
     void SendCopyOfMessage(TcpMessage * tm);
 };
 

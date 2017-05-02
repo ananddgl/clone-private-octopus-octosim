@@ -19,6 +19,7 @@ public:
 
     DnsMessage * CreateResponse();
     const char * CodeToText();
+    virtual void Log(FILE* LogFile, bool dropped) override;
 
     unsigned long long creation_time;
     unsigned long long query_id;

@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 #include "IModels.h"
 
 class LossyLink : public IPath
@@ -14,6 +15,5 @@ public:
     unsigned long long delay;
     unsigned long messages_sent;
     unsigned long messages_dropped;
-
 };
 

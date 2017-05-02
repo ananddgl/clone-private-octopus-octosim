@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 class SimulationLoop;
 
 class ISimMessage
@@ -9,6 +10,7 @@ public:
 
     virtual void Reference();
     virtual bool Dereference();
+    virtual void Log(FILE* LogFile, bool dropped);
 
 private:
     int referenceCount;

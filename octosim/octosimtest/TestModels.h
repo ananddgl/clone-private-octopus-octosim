@@ -8,6 +8,8 @@ public:
     TestMessage(int n);
     ~TestMessage() {}
 
+    virtual void Log(FILE* LogFile, bool dropped) override;
+
     int message_number;
 };
 
@@ -18,7 +20,7 @@ public:
     int nb_packets_sent;
     unsigned int message_delay;
 
-    TestSource(SimulationLoop * loop);
+    TestSource(SimulationLoop * loop, int nb_packets_to_send = 10);
 
     ~TestSource();
 

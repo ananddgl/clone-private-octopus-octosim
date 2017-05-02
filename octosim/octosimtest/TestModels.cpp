@@ -2,9 +2,9 @@
 #include "../octosimlib/SimulationLoop.h"
 #include "TestModels.h"
 
-TestSource::TestSource(SimulationLoop * loop)
+TestSource::TestSource(SimulationLoop * loop, int nb_packets_to_send)
     :
-    nb_packets_to_send (10),
+    nb_packets_to_send (nb_packets_to_send),
     nb_packets_sent(0),
     message_delay(500),
     IApplication(loop)
@@ -92,6 +92,15 @@ TestMessage::TestMessage(int n)
     message_number(n),
     ISimMessage()
 { }
+
+void TestMessage::Log(FILE * LogFile, bool dropped)
+{
+    if (LogFile)
+    {
+        fprintf(LogFile, "%sTestMessage %d\n",
+            (dropped) ? "Dropped " : "", message_number);
+    }
+}
 
 TestSimpleDelay::TestSimpleDelay(int delay, SimulationLoop * loop)
     :

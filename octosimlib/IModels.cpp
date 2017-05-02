@@ -33,6 +33,14 @@ bool ISimMessage::Dereference()
     return ret;
 }
 
+void ISimMessage::Log(FILE * LogFile, bool dropped)
+{
+    if (LogFile)
+    {
+        fprintf(LogFile, "%sMessage\n", (dropped) ? "Dropped " : "");
+    }
+}
+
 ISimObject::ISimObject(SimulationLoop * loop)
     :
     loop(loop)
