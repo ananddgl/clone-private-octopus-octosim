@@ -140,6 +140,7 @@
     <ClInclude Include="IModels.h" />
     <ClInclude Include="LossyLink.h" />
     <ClInclude Include="MessageTree.h" />
+    <ClInclude Include="RandomByCFD.h" />
     <ClInclude Include="SimulationLoop.h" />
     <ClInclude Include="SimulationRandom.h" />
     <ClInclude Include="TcpSim.h" />
@@ -154,6 +155,7 @@
     <ClCompile Include="IModels.cpp" />
     <ClCompile Include="LossyLink.cpp" />
     <ClCompile Include="MessageTree.cpp" />
+    <ClCompile Include="RandomByCFD.cpp" />
     <ClCompile Include="SimulationLoop.cpp" />
     <ClCompile Include="SimulationRandom.cpp" />
     <ClCompile Include="TcpSim.cpp" />

@@ -266,7 +266,7 @@ unsigned long SimulationRandom::GetRandomUniform(unsigned long upper_bound)
      * inside the minimum, so there is hardly any chance to re-roll.
      */
     for (;;) {
-        r = GetRandom();
+        r = GetRandom64();
         if (r >= min)
             break;
     }
@@ -276,10 +276,9 @@ unsigned long SimulationRandom::GetRandomUniform(unsigned long upper_bound)
 
 double SimulationRandom::GetZeroToOne()
 {
-    unsigned long r = GetRandom();
-    double d = r;
-    d /= (double)(0xFFFFFFFFul);
-
+    unsigned long long r = GetRandom64();
+    double d = (double)(r&0xFFFFFFFFFFFF);
+    d /= (double)(0x1000000000000ull);
     return d;
 }
 

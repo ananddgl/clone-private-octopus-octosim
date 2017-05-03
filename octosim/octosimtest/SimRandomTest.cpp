@@ -22,6 +22,13 @@ bool SimRandomTest::SimRandomDoTest()
     if (rnd != NULL)
     {
         rnd = new SimulationRandom();
+
+        ret = (rnd != NULL);
+    }
+
+    if (ret)
+    {
+        ret = ZeroToOne();
     }
 
     for (int i = 4; ret && i >= 1; i--)
@@ -30,6 +37,11 @@ bool SimRandomTest::SimRandomDoTest()
         {
             ret = false;
         }
+    }
+
+    if (rnd != NULL)
+    {
+        delete rnd;
     }
 
     return ret;
@@ -223,5 +235,25 @@ bool SimRandomTest::FrequencyTest(unsigned int * observed, int nb_buckets, int n
     dnalpha /= sqrt((double)nb_samples);
 
     return dnalpha >= cfd_delta_max;
+}
+
+bool SimRandomTest::ZeroToOne()
+{
+    bool ret = true;
+    FILE * F = NULL;
+
+    ret = (fopen_s(&F, "zerotoone.csv", "w") == 0);
+
+    for (int i = 0; ret && i < 1024; i++)
+    {
+        double d = rnd->GetZeroToOne();
+        fprintf(F, """%f"",\n", d);
+    }
+
+    if (F != NULL)
+    {
+        fclose(F);
+    }
+    return ret;
 }
 

@@ -135,6 +135,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CfdRandomTest.h" />
     <ClInclude Include="DnsTcpSimTest.h" />
     <ClInclude Include="DnsUdpSimTest.h" />
     <ClInclude Include="MessageTreetest.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="WriteOnceTest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CfdRandomTest.cpp" />
     <ClCompile Include="DnsTcpSimTest.cpp" />
     <ClCompile Include="DnsUdpSimTest.cpp" />
     <ClCompile Include="MessageTreetest.cpp" />

@@ -9,6 +9,7 @@
 #include "../octosimtest/TcpRetransmitTest.h"
 #include "../octosimtest/DnsTcpSimTest.h"
 #include "../octosimtest/SimpleTcpSimTest.h"
+#include "../octosimtest/CfdRandomTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -127,6 +128,16 @@ namespace SimLibUnitTest
             bool ret = dtst.DnsTcpSimDoTest();
 
             Assert::IsTrue(ret, L"Dns Quic Sim test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestCfdRandom)
+        {
+            // TODO: Your test code here
+            CfdRandomTest crt;
+
+            bool ret = crt.CfdRandomDoTest();
+
+            Assert::IsTrue(ret, L"Cfd Random test should succeed"); (ret == true);
         }
 	};
 }
