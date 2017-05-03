@@ -3,8 +3,9 @@
 #include "SimulationLoop.h"
 #include "TcpSim.h"
 
-TcpSim::TcpSim(SimulationLoop* loop)
+TcpSim::TcpSim(SimulationLoop* loop, bool quic_mode)
     :
+    quic_mode(quic_mode),
     tcp_idle_timeout(20000000ull),
     rtt(1000000ull),
     rtt_dev(0ull),
@@ -130,9 +131,17 @@ void TcpSim::Input(ISimMessage * message)
             if (reorderQueue.Insert(tm)) {
                 ISimMessage * ism;
 
+                if (quic_mode)
+                {
+                    ISimMessage * ism = tm->payload;
+                    tm->payload->Reference();
+                    GetApplication()->Input(ism);
+                }
+                
                 while ((ism = reorderQueue.DequeueInOrder()) != NULL)
                 {
-                    GetApplication()->Input(ism);
+                    if (!quic_mode)
+                        GetApplication()->Input(ism);
                 }
             }
 
@@ -697,10 +706,9 @@ bool TcpSimRetransmitQueue::ApplyTimer(unsigned long long lastTransmitTime)
 
 void TcpSimRetransmitQueue::ResetBeforeSyn()
 { 
-    /* Pick a sequence number of the SYN */
-    /* Reset the sequence numbers */
+    /* Reset the sequence numbers so the packets are sent in the new connection. */
     TcpMessage * next = retransmitQueue;
-    unsigned long long newSeq = ++last_sequence_number_sent;
+    unsigned long long newSeq = 0;
     while (next != NULL)
     {
         newSeq++;

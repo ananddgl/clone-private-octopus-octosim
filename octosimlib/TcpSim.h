@@ -93,7 +93,7 @@ public:
 class TcpSim : public ITransport
 {
 public:
-    TcpSim(SimulationLoop* loop);
+    TcpSim(SimulationLoop* loop, bool quic_mode = false);
     ~TcpSim();
 
     // Inherited via ITransport
@@ -101,6 +101,7 @@ public:
     virtual void Input(ISimMessage * message) override;
     virtual void TimerExpired(unsigned long long simulationTime) override;
 
+    bool quic_mode;
     TcpSimRetransmitQueue retransmitQueue;
     TcpSimReorderQueue reorderQueue;
     unsigned long long last_transmit_or_receive;

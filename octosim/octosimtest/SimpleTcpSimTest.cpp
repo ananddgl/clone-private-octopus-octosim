@@ -6,7 +6,9 @@
 #include "TestModels.h"
 #include "SimpleTcpSimTest.h"
 
-SimpleTcpSimTest::SimpleTcpSimTest()
+SimpleTcpSimTest::SimpleTcpSimTest(bool quic_mode)
+    :
+    quic_mode(quic_mode)
 {
 }
 
@@ -17,7 +19,8 @@ SimpleTcpSimTest::~SimpleTcpSimTest()
 bool SimpleTcpSimTest::SimpleTcpSimDoTest()
 {
     bool ret = true;
-    FILE * F = fopen("TcpSimple.txt", "w");
+    FILE * F = NULL;
+    (void) fopen_s(&F, "TcpSimple.txt", "w");
 
     if (ret)
     {
@@ -57,8 +60,8 @@ bool SimpleTcpSimTest::DoOneTest(int nbPackets, int delta_t, int delay, double l
     SimulationLoop * loop = new SimulationLoop(F);
     TestSource * source = new TestSource(loop, nbPackets);
     TestSink * sink = new TestSink(loop);
-    TcpSim * transport1 = new TcpSim(loop);
-    TcpSim * transport2 = new TcpSim(loop);
+    TcpSim * transport1 = new TcpSim(loop, quic_mode);
+    TcpSim * transport2 = new TcpSim(loop, quic_mode);
     LossyLink * path1 = new LossyLink(loop, lossRate, delay);
     LossyLink * path2 = new LossyLink(loop, lossRate, delay);
 

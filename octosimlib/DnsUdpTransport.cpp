@@ -14,8 +14,6 @@
 DnsUdpTransport::DnsUdpTransport(SimulationLoop* loop)
     :
     retransmitQueue(NULL),
-    // rtt(1000000ull),
-    // rtt_dev(0ull),
     nb_packets_deleted(0),
     last_received_time(0),
     ITransport(loop)
@@ -53,10 +51,14 @@ void DnsUdpTransport::ApplicationInput(ISimMessage * message)
             dm->next_in_queue = retransmitQueue;
             retransmitQueue = dm;
             dm->current_udp_timer = rtt + 2*rtt_dev;
-            dm->transmit_time = GetLoop()->SimulationTime();
-            dm->ack_time = last_received_time;
             ResetTimer(dm->current_udp_timer);
+            dm->ack_time = last_received_time;
         }
+        else
+        {
+            dm->ack_time = dm->creation_time;
+        }
+        dm->transmit_time = GetLoop()->SimulationTime();
 
         GetPath()->Input(dm);
     }
@@ -123,6 +125,21 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
     else
         nb_timers_outstanding = 0;
 
+
+    if (GetLoop()->LogFile != NULL)
+    {
+        fprintf(GetLoop()->LogFile, "UDP(%u) Timer %llu, last time = %llu",
+            object_number,
+            simulationTime,
+            last_received_time);
+        if (!(retransmitQueue == NULL))
+        {
+            fprintf(GetLoop()->LogFile, ", Queue [%llu..",
+                retransmitQueue->query_id);
+        }
+        fprintf(GetLoop()->LogFile, "\n");
+    }
+
     if (simulationTime >= next_timer || nb_timers_outstanding <= 0)
     {
         /* Find all the pending messages larger than simulation time */
@@ -142,6 +159,7 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
                 if (dm->udp_repeat_counter < 4)
                 {
                     /* retransmit */
+                    dm->transmit_time = simulationTime;
                     dm->udp_repeat_counter++;
                     dm->current_udp_timer *= 3;
                     min_timer = std::min(min_timer, dm->current_udp_timer);

@@ -95,7 +95,7 @@ namespace SimLibUnitTest
 
             bool ret = stst.SimpleTcpSimDoTest();
 
-            Assert::IsTrue(ret, L"Dns Tcp Sim test should succeed"); (ret == true);
+            Assert::IsTrue(ret, L"Simple Tcp Sim test should succeed"); (ret == true);
         }
 
         TEST_METHOD(TestDnsTcpSim)
@@ -106,6 +106,27 @@ namespace SimLibUnitTest
             bool ret = dtst.DnsTcpSimDoTest();
 
             Assert::IsTrue(ret, L"Dns Tcp Sim test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestSimpleQuicSim)
+        {
+            // TODO: Your test code here
+            SimpleTcpSimTest stst(true);
+
+            bool ret = stst.SimpleTcpSimDoTest();
+
+            Assert::IsTrue(ret, L"Simple Quic Sim test should succeed"); (ret == true);
+        }
+
+
+        TEST_METHOD(TestDnsQuicSim)
+        {
+            // TODO: Your test code here
+            DnsTcpSimTest dtst(true);
+
+            bool ret = dtst.DnsTcpSimDoTest();
+
+            Assert::IsTrue(ret, L"Dns Quic Sim test should succeed"); (ret == true);
         }
 	};
 }

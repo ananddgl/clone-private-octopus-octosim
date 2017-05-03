@@ -21,6 +21,10 @@ DnsUdpSimTest::~DnsUdpSimTest()
 
 bool DnsUdpSimTest::DnsUdpSimDoTest()
 {
+    char * logName = "UdpDnsTraces.txt";
+    FILE * F = NULL;
+    (void)fopen_s(&F, logName, "w");
+
     bool ret = DoOneTest(1, 7500, 0);
 
     if (ret)
@@ -35,20 +39,28 @@ bool DnsUdpSimTest::DnsUdpSimDoTest()
 
     if (ret)
     {
-        ret = DoOneTest(400, 7500, 0.01);
+        ret = DoOneTest(400, 7500, 0.01, F, true);
     }
 
     return ret;
 }
 
-bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
+bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE * FStats, bool doCsvLog)
 {
     bool ret = true;
+    FILE * F = NULL;
 
-    SimulationLoop * loop = new SimulationLoop();
+    if (doCsvLog)
+    {
+        errno_t err = fopen_s(&F, "dnsudplog.csv", "w");
+
+        ret = (err == 0);
+    }
+
+    SimulationLoop * loop = new SimulationLoop(FStats);
     TestSimpleDelay * arrival_process = new TestSimpleDelay(5000, loop);
     TestSimpleDelay * authoritative_process = new TestSimpleDelay(3000, loop);
-    DnsStub * stub = new DnsStub(loop, NULL, nbPackets, arrival_process);
+    DnsStub * stub = new DnsStub(loop, F, nbPackets, arrival_process);
     DnsRecursive * recursive = new DnsRecursive(loop, authoritative_process);
     DnsUdpTransport * transport1 = new DnsUdpTransport(loop);
     DnsUdpTransport * transport2 = new DnsUdpTransport(loop);
@@ -62,7 +74,7 @@ bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
     {
         ret = false;
     }
-    else
+    else if (ret)
     {
         /* Creating a two way network. */
         stub->SetTransport(transport1);
@@ -102,6 +114,11 @@ bool DnsUdpSimTest::DoOneTest(int nbPackets, int delay, double lossRate)
         delete stub;
     if (loop != NULL)
         delete loop;
+
+    if (F != NULL)
+    {
+        fclose(F);
+    }
 
     return ret;
 }

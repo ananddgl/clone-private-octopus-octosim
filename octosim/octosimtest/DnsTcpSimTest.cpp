@@ -10,7 +10,9 @@
 
 
 
-DnsTcpSimTest::DnsTcpSimTest()
+DnsTcpSimTest::DnsTcpSimTest(bool quic_mode)
+    :
+    quic_mode(quic_mode)
 {
 }
 
@@ -22,7 +24,9 @@ DnsTcpSimTest::~DnsTcpSimTest()
 bool DnsTcpSimTest::DnsTcpSimDoTest()
 {
     bool ret = true;
-    FILE * F = fopen("TcpDnsTest.txt", "w");
+    char * logName = (quic_mode) ? "QuicDnsTest.txt" : "TcpDnsTest.txt";
+    FILE * F = NULL;
+    (void) fopen_s(&F, logName, "w");
 
     if (ret)
     {
@@ -36,12 +40,12 @@ bool DnsTcpSimTest::DnsTcpSimDoTest()
 
     if (ret)
     {
-        ret = DoOneTest(10, 7500, 0.2, F);
+        ret = DoOneTest(10, 7500, 0.2);
     }
 
     if (ret)
     {
-        ret = DoOneTest(400, 7500, 0.01);
+        ret = DoOneTest(400, 7500, 0.01, F, true);
     }
 
     if (F != NULL)
@@ -51,17 +55,26 @@ bool DnsTcpSimTest::DnsTcpSimDoTest()
     return ret;
 }
 
-bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE* F)
+bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE* F, bool doCsvLog)
 {
     bool ret = true;
+    FILE * CsvLog = NULL;
+    char * csvLogName = (quic_mode) ? "dnsquiclog.csv" : "dnstcplog.csv";
+
+    if (doCsvLog)
+    {
+        errno_t err = fopen_s(&CsvLog, csvLogName, "w");
+
+        ret = (err == 0);
+    }
 
     SimulationLoop * loop = new SimulationLoop(F);
     TestSimpleDelay * arrival_process = new TestSimpleDelay(5000, loop);
     TestSimpleDelay * authoritative_process = new TestSimpleDelay(3000, loop);
-    DnsStub * stub = new DnsStub(loop, NULL, nbPackets, arrival_process);
+    DnsStub * stub = new DnsStub(loop, CsvLog, nbPackets, arrival_process);
     DnsRecursive * recursive = new DnsRecursive(loop, authoritative_process);
-    TcpSim * transport1 = new TcpSim(loop);
-    TcpSim * transport2 = new TcpSim(loop);
+    TcpSim * transport1 = new TcpSim(loop, quic_mode);
+    TcpSim * transport2 = new TcpSim(loop, quic_mode);
     LossyLink * path1 = new LossyLink(loop, lossRate, delay);
     LossyLink * path2 = new LossyLink(loop, lossRate, delay);
 
@@ -112,6 +125,11 @@ bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE* F
         delete stub;
     if (loop != NULL)
         delete loop;
+
+    if (CsvLog != NULL)
+    {
+        fclose(CsvLog);
+    }
 
     return ret;
 }

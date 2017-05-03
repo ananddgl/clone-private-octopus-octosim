@@ -32,7 +32,7 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
         delay = 0;
     }
     /* Log if useful */
-    if (GetLoop()->LogFile != NULL)
+    if (dm != NULL && GetLoop()->LogFile != NULL)
     {
         fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llx, delay = %llu\n",
             object_number,

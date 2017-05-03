@@ -231,7 +231,7 @@ void MessageTree::InsertFixup(MessageTreeNode * node)
     MessageTreeNode	*uncle;
 
     /* While not at the root and need fixing... */
-    while (node != root && node->parent->color == MessageNodeRed) {
+    while (node != root && node->parent != NULL && node->parent->color == MessageNodeRed) {
         /* If our parent is left child of our grandparent... */
         if (node->parent->parent != NULL && node->parent == node->parent->parent->left) {
             uncle = node->parent->parent->right;
@@ -261,7 +261,7 @@ void MessageTree::InsertFixup(MessageTreeNode * node)
             }
         }
         else {
-            if (node->parent->parent != NULL)
+            if (node->parent != NULL && node->parent->parent != NULL)
             {
                 uncle = node->parent->parent->left;
             }
@@ -542,12 +542,18 @@ void MessageTree::DeleteFixup(MessageTreeNode * child, MessageTreeNode * child_p
         child_parent->color = MessageNodeBlack;
         if (child_parent->right == child)
         {
-            sibling->left->color = MessageNodeBlack;
+            if (sibling->left != NULL)
+            {
+                sibling->left->color = MessageNodeBlack;
+            }
             RotateRight(child_parent);
         }
         else
         {
-            sibling->right->color = MessageNodeBlack;
+            if (sibling->right != NULL)
+            {
+                sibling->right->color = MessageNodeBlack;
+            }
             RotateLeft(child_parent);
         }
     }

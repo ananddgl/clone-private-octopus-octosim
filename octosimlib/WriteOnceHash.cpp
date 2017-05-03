@@ -115,7 +115,7 @@ bool WriteOnceHash::DoInsert(unsigned long long key)
     bool ret = false;
     unsigned int hash_index = key%tableSize;
 
-    for (int i = 0; i < tableSize; i++)
+    for (unsigned int i = 0; i < tableSize; i++)
     {
         if (hashTable[hash_index] == 0)
         {

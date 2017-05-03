@@ -48,14 +48,14 @@ bool SimulationLoop::SubmitMessage(unsigned long long delta_t, ISimObject * targ
 {
     /* TODO: add lock! */
     bool ret = true;
-    MessageTreeNode * msn = new MessageTreeNode(target, message, simulationTime + delta_t,
+    MessageTreeNode * mtn = new MessageTreeNode(target, message, simulationTime + delta_t,
         eventCounter++);
-    MessageTreeNode * added = eventTree->Insert(msn);
+    MessageTreeNode * added = eventTree->Insert(mtn);
 
     if (added == NULL)
     {
-        added->message = NULL;
-        delete added;
+        mtn->message = NULL;
+        delete mtn;
         ret = false;
     }
 
