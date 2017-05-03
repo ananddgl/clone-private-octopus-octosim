@@ -7,7 +7,9 @@ class DnsStub : public IApplication
 {
 public:
     DnsStub(SimulationLoop * loop, FILE* FStats, 
-        int nb_packets_to_send, IDelayDistribution * source_process);
+        int nb_packets_to_send, 
+        IDelayDistribution * source_process,
+        ILengthDistribution * source_length_process = NULL);
     ~DnsStub();
 
     // Inherited via IApplication
@@ -17,6 +19,7 @@ public:
     FILE* FStats;
     int nb_packets_to_send;
     IDelayDistribution * source_process;
+    ILengthDistribution * source_length_process;
     int nb_packets_sent;
     int nb_transactions_complete;
     int nb_duplicate_transactions;

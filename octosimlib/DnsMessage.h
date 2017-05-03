@@ -14,7 +14,8 @@ public:
     DnsMessage(
         unsigned long long creation_time,
         unsigned long long query_id,
-        unsigned long long qtarget_id);
+        unsigned long long qtarget_id,
+        unsigned int l = 100);
     ~DnsMessage();
 
     DnsMessage * CreateResponse();
@@ -29,6 +30,7 @@ public:
     unsigned long long ack_time; /* in responses, the time at which the last message was received */
     unsigned long long current_udp_timer;
     int udp_repeat_counter;
+    unsigned int query_length;
     DnsMessageCode messageCode;
 };
 

@@ -51,6 +51,9 @@
     <ClInclude Include="CfdRandomTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReferenceCfd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MessageTreetest.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CfdRandomTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReferenceCfd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

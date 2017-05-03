@@ -2,8 +2,9 @@
 #include "SimulationLoop.h"
 #include "IModels.h"
 
-ISimMessage::ISimMessage()
+ISimMessage::ISimMessage(unsigned int length)
     :
+    length(length),
     referenceCount(1)
 {
 }
@@ -133,3 +134,29 @@ IDelayDistribution::~IDelayDistribution()
 {
 }
 
+/* Default input for delay distributions is to just ignore and delete the input */
+void IDelayDistribution::Input(ISimMessage * message)
+{
+    if (message->Dereference())
+    {
+        delete message;
+    }
+}
+
+ILengthDistribution::ILengthDistribution(SimulationLoop * loop)
+    :
+    ISimObject(loop)
+{
+}
+
+ILengthDistribution::~ILengthDistribution()
+{
+}
+
+void ILengthDistribution::Input(ISimMessage * message)
+{
+    if (message->Dereference())
+    {
+        delete message;
+    }
+}

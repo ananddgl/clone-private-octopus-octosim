@@ -87,10 +87,10 @@ void TestLink::Input(ISimMessage * message)
     GetLoop()->SubmitMessage(delay, GetTransport(), message);
 }
 
-TestMessage::TestMessage(int n)
+TestMessage::TestMessage(int n, unsigned int l)
     :
     message_number(n),
-    ISimMessage()
+    ISimMessage(l)
 { }
 
 void TestMessage::Log(FILE * LogFile, bool dropped)
@@ -102,7 +102,7 @@ void TestMessage::Log(FILE * LogFile, bool dropped)
     }
 }
 
-TestSimpleDelay::TestSimpleDelay(int delay, SimulationLoop * loop)
+TestSimpleDelay::TestSimpleDelay(unsigned int delay, SimulationLoop * loop)
     :
     delay(delay),
     IDelayDistribution(loop)
@@ -124,4 +124,20 @@ void TestSimpleDelay::Input(ISimMessage * message)
 unsigned long long TestSimpleDelay::NextDelay()
 {
     return delay;
+}
+
+TestSimpleLength::TestSimpleLength(unsigned int length, SimulationLoop * loop)
+    :
+    length(length),
+    ILengthDistribution(loop)
+{
+}
+
+TestSimpleLength::~TestSimpleLength()
+{
+}
+
+unsigned int TestSimpleLength::NextLength()
+{
+    return length;
 }

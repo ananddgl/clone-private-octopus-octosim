@@ -5,7 +5,7 @@
 class TestMessage : public ISimMessage
 {
 public:
-    TestMessage(int n);
+    TestMessage(int n, unsigned int l = 100);
     ~TestMessage() {}
 
     virtual void Log(FILE* LogFile, bool dropped) override;
@@ -70,14 +70,26 @@ public:
 class TestSimpleDelay : public IDelayDistribution
 {
 public:
-    int delay;
+    unsigned int delay;
 
-    TestSimpleDelay(int delay, SimulationLoop * loop);
+    TestSimpleDelay(unsigned int delay, SimulationLoop * loop);
     ~TestSimpleDelay();
 
     // Inherited via IDelayDistribution
     virtual void Input(ISimMessage * message) override;
 
     virtual unsigned long long NextDelay() override;
+
+};
+
+class TestSimpleLength : public ILengthDistribution
+{
+public:
+    unsigned int length;
+
+    TestSimpleLength(unsigned int length, SimulationLoop * loop);
+    ~TestSimpleLength();
+
+    virtual unsigned int NextLength() override;
 
 };

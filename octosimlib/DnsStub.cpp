@@ -6,11 +6,13 @@
 
 
 DnsStub::DnsStub(SimulationLoop * loop, FILE* FStats,
-    int nb_packets_to_send, IDelayDistribution * source_process)
+    int nb_packets_to_send, IDelayDistribution * source_process,
+    ILengthDistribution * source_length_process)
     :
     FStats(FStats),
     nb_packets_to_send(nb_packets_to_send),
     source_process(source_process),
+    source_length_process(source_length_process),
     nb_packets_sent(0),
     nb_transactions_complete(0),
     nb_duplicate_transactions(0),
@@ -53,13 +55,15 @@ void DnsStub::Input(ISimMessage * message)
             {
                 unsigned long long arrival = GetLoop()->SimulationTime();
                 fprintf(FStats,
-                    """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%d""\n",
+                    """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%u"",""%u"",""%d""\n",
                     arrival,
                     dm->creation_time,
                     arrival - dm->creation_time,
                     dm->CodeToText(),
                     dm->query_id,
                     dm->qtarget_id,
+                    dm->query_length,
+                    dm->length,
                     dm->udp_repeat_counter
                 );
             }
@@ -97,6 +101,11 @@ void DnsStub::TimerExpired(unsigned long long simulationTime)
         {
             /* Get a new timer for the new packet. */
             GetLoop()->RequestTimer(source_process->NextDelay(), this);
+            /* Set the length according to the distribution */
+            if (source_length_process != NULL)
+            {
+                dm->length = source_length_process->NextLength();
+            }
         }
     }
 }

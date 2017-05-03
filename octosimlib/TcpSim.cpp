@@ -330,10 +330,12 @@ TcpMessage::TcpMessage(ISimMessage * payload)
 {
     memset(ack_range_first, 0, sizeof(ack_range_first));
     memset(ack_range_last, 0, sizeof(ack_range_last));
+    length = 60;
     if (payload != NULL)
     {
         payload->Reference();
-    }
+        length += payload->length;
+    } 
 }
 
 TcpMessage::~TcpMessage()

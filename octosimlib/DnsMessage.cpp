@@ -5,7 +5,8 @@
 DnsMessage::DnsMessage(
     unsigned long long creation_time,
     unsigned long long q_id, 
-    unsigned long long qt_id)
+    unsigned long long qt_id,
+    unsigned int l)
     :
     creation_time(creation_time),
     query_id(q_id),
@@ -15,7 +16,8 @@ DnsMessage::DnsMessage(
     transmit_time(0),
     current_udp_timer(0),
     udp_repeat_counter(0),
-    ISimMessage()
+    query_length(0),
+    ISimMessage(l)
 {
 }
 
@@ -31,6 +33,7 @@ DnsMessage * DnsMessage::CreateResponse()
     if (response != NULL)
     {
         response->messageCode = DnsMessageCode::response;
+        response->query_length = length;
     }
 
     return response;

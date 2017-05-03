@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "../octosimlib/SimulationLoop.h"
 #include "../octosimlib/SimulationRandom.h"
 #include "../octosimlib/RandomByCFD.h"
 #include "CfdRandomTest.h"
@@ -86,11 +87,16 @@ unsigned int nb_cfd_v = sizeof(test_cfd_v) / sizeof(unsigned long long);
 
 bool CfdRandomTest::CfdRandomDoTest()
 {
-    SimulationRandom rnd;
-    RandomByCFD cfdr;
+    SimulationLoop loop;
+    RandomDelayByCFD cfdr(&loop);
     bool ret = (nb_cfd_v == nb_cfd_p);
     unsigned long long test_values[1024];
     FILE * F = NULL;
+
+    if (ret)
+    {
+        ret = loop.Init();
+    }
 
     if (ret && (fopen_s(&F, "cftRnd.csv", "w") != 0))
     {
@@ -99,12 +105,12 @@ bool CfdRandomTest::CfdRandomDoTest()
 
     if (ret)
     {
-        ret = cfdr.Init(&rnd, nb_cfd_p, test_cfd_p, test_cfd_v);
+        ret = cfdr.Init(nb_cfd_p, test_cfd_p, test_cfd_v);
     }
 
     for (int i = 0; ret && i < 1024; i++)
     {
-        test_values[i] = cfdr.GetCfdRandom();
+        test_values[i] = cfdr.NextDelay();
         fprintf(F, """%llu"",\n", test_values[i]);
     }
 

@@ -5,12 +5,14 @@ class SimulationLoop;
 class ISimMessage
 {
 public:
-    ISimMessage();
+    ISimMessage(unsigned int length = 100);
     virtual ~ISimMessage();
 
     virtual void Reference();
     virtual bool Dereference();
     virtual void Log(FILE* LogFile, bool dropped);
+
+    unsigned int length;
 
 private:
     int referenceCount;
@@ -121,11 +123,23 @@ private:
     ITransport * transport;
 };
 
-class IDelayDistribution : ISimObject
+class IDelayDistribution : public ISimObject
 {
 public:
     IDelayDistribution(SimulationLoop * loop);
     virtual ~IDelayDistribution();
 
     virtual unsigned long long NextDelay() = 0;
+    virtual void Input(ISimMessage * message) override;
+};
+
+
+class ILengthDistribution : public ISimObject
+{
+public:
+    ILengthDistribution(SimulationLoop * loop);
+    virtual ~ILengthDistribution();
+
+    virtual unsigned int NextLength() = 0;
+    virtual void Input(ISimMessage * message) override;
 };
