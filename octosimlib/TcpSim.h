@@ -41,6 +41,7 @@ public:
     unsigned long long ack_range_last[16];
     unsigned long long transmit_time;
     unsigned long long ack_time;
+    unsigned long long time_since_last_received;
 
     ISimMessage * payload;
 };
@@ -53,7 +54,7 @@ public:
 
     bool Insert(TcpMessage * tm);
     ISimMessage * DequeueInOrder();
-    bool IsAckNeeded(unsigned long long current_time);
+    bool IsAckNeeded(unsigned long long last_received_time);
     void FillAckData(TcpMessage * tm, unsigned long long current_time);
     bool IsEmpty() { return reorderQueue == NULL; }
     void Clean();
@@ -63,7 +64,6 @@ public:
     unsigned long long time_last_ack_sent;
     unsigned long long last_sequence_received;
     unsigned long long last_sequence_processed;
-    unsigned long long last_data_received_time;
     bool dup_received;
 };
 
@@ -93,7 +93,7 @@ public:
 class TcpSim : public ITransport
 {
 public:
-    TcpSim(SimulationLoop* loop, bool quic_mode = false);
+    TcpSim(SimulationLoop* loop, bool quic_mode = false, bool zero_rtt = false);
     ~TcpSim();
 
     // Inherited via ITransport
@@ -102,18 +102,18 @@ public:
     virtual void TimerExpired(unsigned long long simulationTime) override;
 
     bool quic_mode;
+    bool zero_rtt;
     TcpSimRetransmitQueue retransmitQueue;
     TcpSimReorderQueue reorderQueue;
-    unsigned long long last_transmit_or_receive;
-    // unsigned long long last_received_time;
+    unsigned long long last_transmit_time;
+    unsigned long long last_remote_transmit_time;
+    unsigned long long last_received_time;
     unsigned long long tcp_idle_timeout;
-    unsigned long long rtt;
-    unsigned long long rtt_dev;
     TcpSimState state;
 
     int nb_packets_deleted;
 private:
-    void SendControlMessage(TcpMessageCode code, unsigned long long last_received_time);
+    void SendControlMessage(TcpMessageCode code);
     void SendCopyOfMessage(TcpMessage * tm);
 };
 

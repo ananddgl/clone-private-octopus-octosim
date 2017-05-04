@@ -21,7 +21,7 @@ DnsRealisticTest::~DnsRealisticTest()
 {
 }
 
-const unsigned int nb_variants = 3;
+const unsigned int nb_variants = 4;
 
 bool DnsRealisticTest::DnsRealisticDoTest()
 {
@@ -29,7 +29,7 @@ bool DnsRealisticTest::DnsRealisticDoTest()
 
     for (unsigned int i = 0; ret && i < nb_variants; i++)
     {
-        ret = DnsRealisticOneTest(i, 400, 15000, 0.01);
+        ret = DnsRealisticOneTest(i, 2000, 15000, 0.01);
     }
 
     return ret;
@@ -38,13 +38,15 @@ bool DnsRealisticTest::DnsRealisticDoTest()
 char * csv_variant[] = {
     "dnsUdpRealistic.csv",
     "dnsTcpRealistic.csv",
-    "dnsQuicRealistic.csv"
+    "dnsQuicRealistic.csv",
+    "dnsQuic0RttRealistic.csv"
 };
 
 char * traces_variant[] = {
     "dnsUdpRealisticTraces.txt",
     "dnsTcpRealisticTraces.txt",
-    "dnsQuicRealisticTraces.txt"
+    "dnsQuicRealisticTraces.txt",
+    "dnsQuic0RttRealisticTraces.txt"
 };
 
 bool DnsRealisticTest::DnsRealisticOneTest(unsigned int variant,
@@ -92,6 +94,10 @@ bool DnsRealisticTest::DnsRealisticOneTest(unsigned int variant,
     case 2:
         transport1 = new TcpSim(loop, true);
         transport2 = new TcpSim(loop, true);
+        break;
+    case 3:
+        transport1 = new TcpSim(loop, true, true);
+        transport2 = new TcpSim(loop, true, true);
         break;
     default:
         ret = false;

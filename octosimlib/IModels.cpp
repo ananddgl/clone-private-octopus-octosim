@@ -101,6 +101,7 @@ void ITransport::RttUpdate(unsigned long long transmitTime, unsigned long long a
     if (arrivalTime >= transmitTime)
     {
         unsigned long long rtt_measured = arrivalTime - transmitTime;
+
         if (rtt_dev == 0)
         {
             rtt = rtt_measured;
@@ -114,7 +115,8 @@ void ITransport::RttUpdate(unsigned long long transmitTime, unsigned long long a
             rtt_dev = (7 * rtt_dev + delta_rtt) / 8;
         }
     }
-    if ((rtt + 2 * rtt_dev) > 1000000 && GetLoop()->LogFile != NULL)
+
+    if (GetLoop()->LogFile != NULL)
     {
         fprintf(GetLoop()->LogFile, 
             "RttUpdate(%d) rtt: %llu, rtt_dev: %llu, T: %llu, A: %llu\n",

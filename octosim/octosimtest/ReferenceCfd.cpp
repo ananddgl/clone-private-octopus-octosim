@@ -75,7 +75,7 @@ const unsigned long long * ReferenceCfd::Arrival()
 
 const unsigned long long * ReferenceCfd::Authoritative()
 {
-    return authoritative_cached;
+    return authoritative; /* authoritative_cached; */
 }
 
 const unsigned int * ReferenceCfd::QueryLength()
