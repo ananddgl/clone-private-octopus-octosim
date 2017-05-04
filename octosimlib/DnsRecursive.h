@@ -7,7 +7,8 @@
 class DnsRecursive : public IApplication
 {
 public:
-    DnsRecursive(SimulationLoop * loop, IDelayDistribution * authoritative_model);
+    DnsRecursive(SimulationLoop * loop, IDelayDistribution * authoritative_model,
+        ILengthDistribution * length_model = NULL);
     ~DnsRecursive();
 
     DnsAuthoritative authoritative;

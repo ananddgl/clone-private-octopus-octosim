@@ -4,9 +4,10 @@
 #include "DnsRecursive.h"
 
 DnsRecursive::DnsRecursive(SimulationLoop * loop, 
-    IDelayDistribution * authoritative_model)
+    IDelayDistribution * authoritative_model,
+    ILengthDistribution * length_model)
     :
-    authoritative(loop, authoritative_model, this),
+    authoritative(loop, authoritative_model, length_model, this),
     IApplication(loop)
 {
 }

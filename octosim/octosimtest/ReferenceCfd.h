@@ -5,6 +5,7 @@ public:
     ReferenceCfd();
     ~ReferenceCfd();
 
+    static const unsigned int NbPoints();
     static const double * Proba();
     static const unsigned long long * Arrival();
     static const unsigned long long * Authoritative();

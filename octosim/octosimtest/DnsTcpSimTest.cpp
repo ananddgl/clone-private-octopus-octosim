@@ -123,6 +123,10 @@ bool DnsTcpSimTest::DoOneTest(int nbPackets, int delay, double lossRate, FILE* F
         delete recursive;
     if (stub != NULL)
         delete stub;
+    if (arrival_process != NULL)
+        delete arrival_process;
+    if (authoritative_process != NULL)
+        delete authoritative_process;
     if (loop != NULL)
         delete loop;
 

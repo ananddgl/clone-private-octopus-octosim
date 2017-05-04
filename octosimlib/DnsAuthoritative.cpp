@@ -6,9 +6,11 @@
 
 DnsAuthoritative::DnsAuthoritative(SimulationLoop * loop,
     IDelayDistribution * authoritative_model,
+    ILengthDistribution * length_model,
     DnsRecursive * recursive)
     :
     authoritative_model(authoritative_model),
+    length_model(length_model),
     recursive(recursive),
     ISimObject(loop)
 {
@@ -22,6 +24,10 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
 {
     /* Compute the delay */
     unsigned long long delay = authoritative_model->NextDelay();
+    if (length_model)
+    {
+        message->length = length_model->NextLength();
+    }
     DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
 
 
@@ -34,11 +40,12 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
     /* Log if useful */
     if (dm != NULL && GetLoop()->LogFile != NULL)
     {
-        fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llx, delay = %llu\n",
+        fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llx, delay = %llu, length = %u\n",
             object_number,
             dm->CodeToText(),
             dm->qtarget_id,
-            delay);
+            delay,
+            message->length);
     }
     /* Delayed input */
     GetLoop()->SubmitMessage(delay, this, message);

@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CfdRandomTest.h" />
+    <ClInclude Include="DnsRealisticTest.h" />
     <ClInclude Include="DnsTcpSimTest.h" />
     <ClInclude Include="DnsUdpSimTest.h" />
     <ClInclude Include="MessageTreetest.h" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CfdRandomTest.cpp" />
+    <ClCompile Include="DnsRealisticTest.cpp" />
     <ClCompile Include="DnsTcpSimTest.cpp" />
     <ClCompile Include="DnsUdpSimTest.cpp" />
     <ClCompile Include="MessageTreetest.cpp" />

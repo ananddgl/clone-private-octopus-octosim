@@ -24,10 +24,6 @@ DnsStub::DnsStub(SimulationLoop * loop, FILE* FStats,
 
 DnsStub::~DnsStub()
 {
-    if (source_process)
-    {
-        delete source_process;
-    }
 }
 
 /*

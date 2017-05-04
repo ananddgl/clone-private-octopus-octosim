@@ -11,6 +11,7 @@ class DnsAuthoritative : public ISimObject
 public:
     DnsAuthoritative(SimulationLoop * loop,
         IDelayDistribution * authoritative_model,
+        ILengthDistribution * length_model,
         DnsRecursive * recursive);
 
     ~DnsAuthoritative();
@@ -21,5 +22,6 @@ public:
 private:
     DnsRecursive * recursive;
     IDelayDistribution * authoritative_model;
+    ILengthDistribution * length_model;
     WriteOnceHash simulatedCache;
 };

@@ -32,7 +32,7 @@ bool RandomDelayByCFD::Init(
 
 unsigned long long RandomDelayByCFD::NextDelay()
 {
-    return NextCfdValue<unsigned long long>(GetLoop()->Rnd(),
+    return NextCfdValue<unsigned long long>(GetLoop()->InputRnd(),
         nb_cfd_points, cfd_proba, cfd_value);
 }
 
@@ -55,6 +55,9 @@ void RandomDelayByCFD::Clear()
 
 RandomLengthByCFD::RandomLengthByCFD(SimulationLoop * loop)
     :
+    nb_cfd_points(0),
+    cfd_proba(NULL),
+    cfd_value(NULL),
     ILengthDistribution(loop)
 {
 }
@@ -74,7 +77,7 @@ bool RandomLengthByCFD::Init(unsigned int nb_cfd_points, const double * cfd_prob
 
 unsigned int RandomLengthByCFD::NextLength()
 {
-    return NextCfdValue<unsigned int>(GetLoop()->Rnd(),
+    return NextCfdValue<unsigned int>(GetLoop()->InputRnd(),
         nb_cfd_points, cfd_proba, cfd_value);
 }
 

@@ -11,7 +11,8 @@ SimulationLoop::SimulationLoop(FILE * LogFile)
     simulationTime(0),
     eventCounter(0),
     LogFile(LogFile),
-    rnd(NULL)
+    rnd(NULL),
+    input_rnd(NULL)
 {
 }
 
@@ -23,6 +24,9 @@ SimulationLoop::~SimulationLoop()
 
     if (rnd != NULL)
         delete rnd;
+
+    if (input_rnd != NULL)
+        delete input_rnd;
 }
 
 bool SimulationLoop::Init()
@@ -41,6 +45,10 @@ bool SimulationLoop::Init()
         rnd = new SimulationRandom();
     }
 
+    if (ret && input_rnd == NULL)
+    {
+        input_rnd = new SimulationRandom();
+    }
     return ret;
 }
 

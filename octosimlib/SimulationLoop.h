@@ -31,6 +31,7 @@ public:
     }
 
     SimulationRandom * Rnd() { return rnd; }
+    SimulationRandom * InputRnd() { return input_rnd; }
 
     FILE* LogFile;
 
@@ -42,6 +43,7 @@ private:
     unsigned long long simulationTime;
     unsigned long long eventCounter;
     /* Random number generator */
-    SimulationRandom * rnd;
+    SimulationRandom * rnd; /* General purpose */
+    SimulationRandom * input_rnd; /* Input generation */
 };
 

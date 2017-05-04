@@ -10,6 +10,7 @@
 #include "../octosimtest/DnsTcpSimTest.h"
 #include "../octosimtest/SimpleTcpSimTest.h"
 #include "../octosimtest/CfdRandomTest.h"
+#include "../octosimtest/DnsRealisticTest.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -138,6 +139,16 @@ namespace SimLibUnitTest
             bool ret = crt.CfdRandomDoTest();
 
             Assert::IsTrue(ret, L"Cfd Random test should succeed"); (ret == true);
+        }
+
+        TEST_METHOD(TestDnsRealistic)
+        {
+            // TODO: Your test code here
+            DnsRealisticTest drt;
+
+            bool ret = drt.DnsRealisticDoTest();
+
+            Assert::IsTrue(ret, L"Dns Realistic test should succeed"); (ret == true);
         }
 	};
 }
