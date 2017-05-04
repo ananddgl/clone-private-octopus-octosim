@@ -54,10 +54,6 @@ void DnsUdpTransport::ApplicationInput(ISimMessage * message)
             ResetTimer(dm->current_udp_timer);
             dm->ack_time = last_received_time;
         }
-        else
-        {
-            dm->ack_time = dm->creation_time;
-        }
         dm->transmit_time = GetLoop()->SimulationTime();
 
         GetPath()->Input(dm);
@@ -92,7 +88,7 @@ void DnsUdpTransport::Input(ISimMessage * message)
                 {
                     *previous = next->next_in_queue;
                     next->next_in_queue = NULL;
-                    RttUpdate(next->ack_time, GetLoop()->SimulationTime());
+                    RttUpdate(dm->ack_time, GetLoop()->SimulationTime());
                     if (next->Dereference())
                     {
                         delete next;
@@ -145,9 +141,7 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
         /* Find all the pending messages larger than simulation time */
         DnsMessage * dm = retransmitQueue;
         DnsMessage ** previous = &retransmitQueue;
-        unsigned long long min_timer = 10000000;
-
-        next_timer = simulationTime;
+        unsigned long long min_timer = 1000000;
 
         while (dm != NULL)
         {
@@ -155,7 +149,7 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
 
             if (dm->transmit_time + dm->current_udp_timer <= simulationTime)
             {
-                /* Timer has expired -- this means the message was deleted */
+                /* Timer has expired -- this means the message was dropped */
                 if (dm->udp_repeat_counter < 4)
                 {
                     /* retransmit */
@@ -202,6 +196,8 @@ void DnsUdpTransport::TimerExpired(unsigned long long simulationTime)
         }
 
         if (retransmitQueue != NULL)
-            ResetTimer(min_timer);
+        {
+            SetTimer(min_timer);
+        }
     }
 }

@@ -85,10 +85,15 @@ void ITransport::ResetTimer(unsigned long long delay)
     /* Note that we do not bother deleting the old timers. */
     if (nb_timers_outstanding == 0 || (GetLoop()->SimulationTime() + delay) < next_timer)
     {
-        next_timer = GetLoop()->SimulationTime() + delay;
-        nb_timers_outstanding++;
-        GetLoop()->RequestTimer(delay, this);
+        SetTimer(delay);
     }
+}
+
+void ITransport::SetTimer(unsigned long long delay)
+{
+    next_timer = GetLoop()->SimulationTime() + delay;
+    nb_timers_outstanding++;
+    GetLoop()->RequestTimer(delay, this);
 }
 
 void ITransport::RttUpdate(unsigned long long transmitTime, unsigned long long arrivalTime)
@@ -106,8 +111,14 @@ void ITransport::RttUpdate(unsigned long long transmitTime, unsigned long long a
             unsigned long long delta_rtt = (rtt_measured > rtt) ?
                 rtt_measured - rtt : rtt - rtt_measured;
             rtt = (15 * rtt + rtt_measured) / 16;
-            rtt_dev = (3 * rtt_dev + delta_rtt) / 4;
+            rtt_dev = (7 * rtt_dev + delta_rtt) / 8;
         }
+    }
+    if ((rtt + 2 * rtt_dev) > 1000000 && GetLoop()->LogFile != NULL)
+    {
+        fprintf(GetLoop()->LogFile, 
+            "RttUpdate(%d) rtt: %llu, rtt_dev: %llu, T: %llu, A: %llu\n",
+            object_number, rtt, rtt_dev, transmitTime, arrivalTime);
     }
 }
 

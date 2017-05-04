@@ -228,7 +228,7 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
 
         if (!retransmitQueue.IsEmpty())
         {
-            ResetTimer(rtt + 2 * rtt_dev);
+            SetTimer(rtt + 2 * rtt_dev);
         }
     }
     else if (state == syn_sent)
@@ -237,6 +237,7 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
         {
             /* Resend the SYN packet */
             SendControlMessage(syn, reorderQueue.last_data_received_time);
+            SetTimer(rtt + 2 * rtt_dev);
         }
     }
     else if (state == rst_sent)
@@ -246,6 +247,7 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
         {
             /* Resend the SYN packet */
             SendControlMessage(rst, reorderQueue.last_data_received_time);
+            SetTimer(rtt + 2 * rtt_dev);
         }
     }
     else if (state == idle)
@@ -269,7 +271,7 @@ void TcpSim::TimerExpired(unsigned long long simulationTime)
         {
             delay = rtt + 2 * rtt_dev;
         }
-        ResetTimer(delay);
+        SetTimer(delay);
     }
 }
 

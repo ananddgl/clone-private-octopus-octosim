@@ -40,7 +40,7 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
     /* Log if useful */
     if (dm != NULL && GetLoop()->LogFile != NULL)
     {
-        fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llx, delay = %llu, length = %u\n",
+        fprintf(GetLoop()->LogFile, "Authoritative(%d) - %s to %llu, delay = %llu, length = %u\n",
             object_number,
             dm->CodeToText(),
             dm->qtarget_id,

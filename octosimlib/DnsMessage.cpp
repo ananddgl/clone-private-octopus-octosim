@@ -33,6 +33,7 @@ DnsMessage * DnsMessage::CreateResponse()
 
     if (response != NULL)
     {
+        response->ack_time = transmit_time;
         response->messageCode = DnsMessageCode::response;
         response->query_length = length;
     }
@@ -67,8 +68,8 @@ void DnsMessage::Log(FILE * LogFile, bool dropped)
 {
     if (LogFile)
     {
-        fprintf(LogFile, "%sDNS C:%llu, T:%llu, A:%llu, %s, Id:%llx, QId:%llx\n",
+        fprintf(LogFile, "%sDNS C:%llu, T:%llu, A:%llu, %s, QId:%llu, UT: %llu, Id:%llx\n",
             (dropped) ? "Dropped " : "", creation_time, transmit_time, ack_time,
-            CodeToText(), query_id, qtarget_id);
+            CodeToText(), qtarget_id, current_udp_timer, query_id);
     }
 }
