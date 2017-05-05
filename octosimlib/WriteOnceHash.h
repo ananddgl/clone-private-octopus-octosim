@@ -11,8 +11,8 @@ public:
     ~WriteOnceHash();
 
     bool Resize(unsigned tableSize);
-    bool Insert(unsigned long long key);
-    bool Retrieve(unsigned long long key);
+    bool Insert(unsigned long long key, unsigned long long value);
+    bool Retrieve(unsigned long long key, unsigned long long * value);
 
     unsigned int GetCount() {
         return tableCount;
@@ -26,8 +26,9 @@ private:
     unsigned int tableSize;
     unsigned int tableCount;
     unsigned long long * hashTable;
+    unsigned long long * valueTable;
 
     void Clear();
-    bool DoInsert(unsigned long long key);
+    bool DoInsert(unsigned long long key, unsigned long long value);
 };
 

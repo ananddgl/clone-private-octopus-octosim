@@ -33,16 +33,18 @@ DnsStub::~DnsStub()
 void DnsStub::Input(ISimMessage * message)
 {
     DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
+    unsigned long long retrieved_value;
+
     /* If this is a response, write a summary line */
     if (dm != NULL && dm->messageCode != DnsMessageCode::query )
     {
-        if (completedCache.Retrieve(dm->qtarget_id))
+        if (completedCache.Retrieve(dm->qtarget_id, &retrieved_value))
         {
             nb_duplicate_transactions++;
         }
         else
         {
-            completedCache.Insert(dm->qtarget_id);
+            completedCache.Insert(dm->qtarget_id, dm->qtarget_id);
             if (dm->messageCode == DnsMessageCode::response)
             {
                 nb_transactions_complete++;

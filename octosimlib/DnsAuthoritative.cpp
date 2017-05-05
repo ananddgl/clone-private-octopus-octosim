@@ -23,7 +23,9 @@ DnsAuthoritative::~DnsAuthoritative()
 void DnsAuthoritative::RecursiveInput(ISimMessage * message)
 {
     /* Compute the delay */
-    unsigned long long delay = authoritative_model->NextDelay();
+    unsigned long long current_time = GetLoop()->SimulationTime();
+    unsigned long long retrievedValue = 0;
+    unsigned long long delay = 0;
     if (length_model)
     {
         message->length = length_model->NextLength();
@@ -33,12 +35,24 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
     if (dm != NULL)
     {
         /* Check whether this is in cache */
-        if (dm != NULL && simulatedCache.Retrieve(dm->qtarget_id))
+        if (dm != NULL && simulatedCache.Retrieve(dm->qtarget_id, &retrievedValue))
         {
-            /* Insertion fails if already in cache */
-            delay = 0;
+            /* Target is already in cache */
+            if (retrievedValue < current_time)
+            {
+                delay = 0;
+            }
+            else
+            {
+                delay = retrievedValue - current_time;
+            }
         }
-        dm->recursive_time = GetLoop()->SimulationTime();
+        else
+        {
+            delay = authoritative_model->NextDelay();
+            (void)simulatedCache.Insert(dm->qtarget_id, current_time + delay);
+        }
+        dm->recursive_time = current_time;
         dm->authoritative_delay = delay;
         /* Log if useful */
         if (dm != NULL && GetLoop()->LogFile != NULL)
@@ -57,13 +71,7 @@ void DnsAuthoritative::RecursiveInput(ISimMessage * message)
 
 void DnsAuthoritative::Input(ISimMessage * message)
 {
-    DnsMessage * dm = dynamic_cast<DnsMessage*>(message);
-    /* Upon receiving the response, add the target to the cache */
-    if (dm != NULL)
-    {
-        (void)simulatedCache.Retrieve(dm->qtarget_id);
-    }
     /* Submit the input directly to the
-    * of the recursive resolver. */
+     * of the recursive resolver. */
     recursive->AuthoritativeInput(message);
 }

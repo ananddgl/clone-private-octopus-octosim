@@ -62,6 +62,7 @@ void TcpSim::ApplicationInput(ISimMessage * message)
         {
             /* We send a copy of the message, to avoid creating a side channel */
             SendCopyOfMessage(tm);
+            ResetTimer(rtt + 2 * rtt_dev);
         }
     }
 }

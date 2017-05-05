@@ -29,7 +29,7 @@ bool DnsRealisticTest::DnsRealisticDoTest()
 
     for (unsigned int i = 0; ret && i < nb_variants; i++)
     {
-        ret = DnsRealisticOneTest(i, 2000, 15000, 0.01);
+        ret = DnsRealisticOneTest(i, 20000, 15000, 0.01);
     }
 
     return ret;

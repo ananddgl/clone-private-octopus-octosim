@@ -6,7 +6,8 @@ WriteOnceHash::WriteOnceHash()
     :
     tableSize(0),
     tableCount(0),
-    hashTable(NULL)
+    hashTable(NULL),
+    valueTable(NULL)
 {
 }
 
@@ -23,6 +24,12 @@ void WriteOnceHash::Clear()
         delete[] hashTable;
         hashTable = NULL;
     }
+
+    if (valueTable != NULL)
+    {
+        delete[] valueTable;
+        valueTable = NULL;
+    }
     tableSize = 0;
 }
 
@@ -30,6 +37,7 @@ bool WriteOnceHash::Resize(unsigned newSize)
 {
     bool ret = false;
     unsigned long long * oldTable = hashTable;
+    unsigned long long * oldValue = valueTable;
     unsigned int oldSize = tableSize;
 
     if (oldSize >= newSize)
@@ -39,12 +47,15 @@ bool WriteOnceHash::Resize(unsigned newSize)
     else
     {
         unsigned long long * newTable = new unsigned long long[newSize];
+        unsigned long long * newValue = new unsigned long long[newSize];
 
-        if (newTable != NULL)
+        if (newTable != NULL && newValue != NULL)
         {
             hashTable = newTable;
+            valueTable = newValue;
             tableSize = newSize;
             memset(hashTable, 0, sizeof(unsigned long long)*tableSize);
+            memset(valueTable, 0, sizeof(unsigned long long)*tableSize);
             ret = true;
             tableCount = 0;
 
@@ -54,19 +65,22 @@ bool WriteOnceHash::Resize(unsigned newSize)
                 {
                     if (oldTable[i] != 0)
                     {
-                        ret = DoInsert(oldTable[i]);
+                        ret = DoInsert(oldTable[i], oldValue[i]);
                     }
                 }
 
                 if (!ret)
                 {
                     hashTable = oldTable;
+                    valueTable = oldValue;
                     tableSize = oldSize;
                     delete[] newTable;
+                    delete[] newValue;
                 }
                 else
                 {
                     delete[] oldTable;
+                    delete[] oldValue;
                 }
             }
         }
@@ -76,7 +90,7 @@ bool WriteOnceHash::Resize(unsigned newSize)
 }
 
 
-bool WriteOnceHash::Insert(unsigned long long key)
+bool WriteOnceHash::Insert(unsigned long long key, unsigned long long value)
 {
     bool ret = true;
     unsigned int newCount = tableCount+1;
@@ -104,13 +118,13 @@ bool WriteOnceHash::Insert(unsigned long long key)
 
     if (ret)
     {
-        ret = DoInsert(key);
+        ret = DoInsert(key, value);
     }
 
     return ret;
 }
 
-bool WriteOnceHash::DoInsert(unsigned long long key)
+bool WriteOnceHash::DoInsert(unsigned long long key, unsigned long long value)
 {
     bool ret = false;
     unsigned int hash_index = key%tableSize;
@@ -120,6 +134,7 @@ bool WriteOnceHash::DoInsert(unsigned long long key)
         if (hashTable[hash_index] == 0)
         {
             hashTable[hash_index] = key;
+            valueTable[hash_index] = value;
             tableCount++;
             ret = true;
             break;
@@ -143,10 +158,12 @@ bool WriteOnceHash::DoInsert(unsigned long long key)
     return ret;
 }
 
-bool WriteOnceHash::Retrieve(unsigned long long key)
+bool WriteOnceHash::Retrieve(unsigned long long key, unsigned long long * value)
 {
     bool ret = false;
     unsigned int hash_index;
+
+    *value = 0;
 
     if (key != 0 && tableSize > 0)
     {
@@ -162,6 +179,7 @@ bool WriteOnceHash::Retrieve(unsigned long long key)
             else if (hashTable[hash_index] == key)
             {
                 /* found it! */
+                *value = valueTable[hash_index];
                 ret = true;
             }
             else

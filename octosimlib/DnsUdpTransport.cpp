@@ -50,7 +50,7 @@ void DnsUdpTransport::ApplicationInput(ISimMessage * message)
             dm->Reference();
             dm->next_in_queue = retransmitQueue;
             retransmitQueue = dm;
-            dm->current_udp_timer = std::max(rtt + 2 * rtt_dev, 250000ull);
+            dm->current_udp_timer = std::max(rtt + 2 * rtt_dev, 25000ull);
             ResetTimer(dm->current_udp_timer);
             dm->ack_time = last_received_time;
         }
