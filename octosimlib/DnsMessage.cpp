@@ -15,6 +15,8 @@ DnsMessage::DnsMessage(
     next_in_queue(NULL),
     transmit_time(0),
     ack_time(0),
+    recursive_time(0),
+    authoritative_delay(0),
     current_udp_timer(0),
     udp_repeat_counter(0),
     query_length(0),

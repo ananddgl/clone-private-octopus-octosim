@@ -28,6 +28,8 @@ public:
     DnsMessage * next_in_queue;
     unsigned long long transmit_time;
     unsigned long long ack_time; /* in responses, the time at which the last message was received */
+    unsigned long long recursive_time; /* time at which the recursive processed the response */
+    unsigned long long authoritative_delay; /* service delay by the authoritative */
     unsigned long long current_udp_timer;
     int udp_repeat_counter;
     unsigned int query_length;

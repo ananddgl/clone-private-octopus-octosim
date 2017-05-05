@@ -51,10 +51,13 @@ void DnsStub::Input(ISimMessage * message)
             {
                 unsigned long long arrival = GetLoop()->SimulationTime();
                 fprintf(FStats,
-                    """%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%u"",""%u"",""%d""\n",
+                    """%llu"",""%llu"",""%llu"",""%llu"",""%llu"",""%llu"",""%s"",""%llu"",""%llu"",""%u"",""%u"",""%d""\n",
                     arrival,
                     dm->creation_time,
                     arrival - dm->creation_time,
+                    dm->recursive_time - dm->creation_time,
+                    dm->authoritative_delay,
+                    arrival - dm->creation_time - dm->authoritative_delay,
                     dm->CodeToText(),
                     dm->query_id,
                     dm->qtarget_id,
