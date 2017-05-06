@@ -131,7 +131,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BasicHashTable.h" />
     <ClInclude Include="DnsAuthoritative.h" />
     <ClInclude Include="DnsRecursive.h" />
     <ClInclude Include="DnsStub.h" />

@@ -1,11 +1,51 @@
-#include "SimulationRandom.h"
-
 /*
+* Copyright (c) 2017, Private Octopus, Inc.
+* All rights reserved.
+*
+* Permission to use, copy, modify, and distribute this software for any
+* purpose with or without fee is hereby granted, provided that the above
+* copyright notice and this permission notice appear in all copies.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL Private Octopus, Inc. BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* The xorshift128plus algorithm and code are copied from the Wikipedia entry:
+* https://en.wikipedia.org/wiki/Xorshift
+* The algorithm was derived by Sebastiano Vigna from the original xorshift
+* algorithm designed by George Marsaglia.
+* 
+*
+* The Blowfish encryption algorithm was designed by Bruce Schneier and is
+* documented here: https://www.schneier.com/academic/blowfish/.
+*
+* The Blowfish code is copied and adapated to C++ from the original
+* code by Bruce Schneier, available at: 
+* https://www.schneier.com/code/bfsh-sch.zip
+*
+* The Blowfish constants come from Bruce Schneier site:
+* https://www.schneier.com/code/constants.txt
+* In which we get this acompanying text:
 =============================================================
 The hex digits of pi, arranged as four s_boxes & one p_array,
 as per the Blowfish default. These have passed muster w/ Eric
 Young's set of test vectors. Enjoy.  -Mike Schaudies
 =============================================================
+
+*/
+
+
+
+#include "SimulationRandom.h"
+
+/*
 */
 
 static const unsigned long sbox0[] = {
